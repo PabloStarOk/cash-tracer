@@ -6,18 +6,13 @@ import TransactionsTable from '@/components/TransactionsTable.vue'
 interface Props {
   allTransactions: Transaction[]
   expenses: Transaction[]
+  incomes: Transaction[]
 }
 
 defineProps<Props>()
 
 type TabType = 'all' | 'expenses' | 'incomes'
 const activeTab: TabType = 'all'
-const dateFormatter = new Intl.DateTimeFormat(navigator.language, {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-})
-
 const tabs: { type: TabType; label: string; icon: string }[] = [
   { type: 'all', label: 'All', icon: 'pi-table' },
   { type: 'expenses', label: 'Expenses', icon: 'pi-money-bill' },
@@ -43,7 +38,7 @@ const tabs: { type: TabType; label: string; icon: string }[] = [
             <TransactionsTable :transactions="expenses" />
           </TabPanel>
           <TabPanel value="incomes">
-            <p>Incomes</p>
+            <TransactionsTable :transactions="incomes" />
           </TabPanel>
         </TabPanels>
       </Tabs>

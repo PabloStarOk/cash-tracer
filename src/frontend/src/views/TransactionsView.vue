@@ -20,6 +20,7 @@ function openDialog() {
       <TransactionsList
         :allTransactions="store.transactions"
         :expenses="store.expenses"
+        :incomes="store.incomes"
         class="flex-1"
       />
       <TransactionsBottomBar @add="openDialog" class="sticky bottom-0" />
