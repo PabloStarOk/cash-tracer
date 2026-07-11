@@ -18,7 +18,7 @@ function openDialog() {
   <div class="flex gap-4 h-full">
     <div class="flex flex-col flex-1 gap-4 max-w-full">
       <TransactionsList :expenses="store.expenses" class="flex-1" />
-      <TransactionsBottomBar @add="openDialog" />
+      <TransactionsBottomBar @add="openDialog" class="sticky bottom-0" />
     </div>
   </div>
 
