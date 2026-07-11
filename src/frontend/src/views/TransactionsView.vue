@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import TransactionsBottomBar from '@/components/TransactionsBottomBar.vue'
-import TransactionsDialog from '@/components/TransactionsDialog.vue'
+import TransactionsFormDialog from '@/components/TransactionFormDialog.vue'
 import TransactionsList from '@/components/TransactionsList.vue'
 import { CURRENCIES } from '@/data/transactions'
 import { useTransactionStore } from '@/stores/useTransactionsStore'
@@ -35,7 +35,7 @@ function openEditDialog(transaction: Transaction) {
     </div>
   </div>
 
-  <TransactionsDialog
+  <TransactionsFormDialog
     v-model:visible="isDialogVisible"
     v-model:editingTransaction="editingTransaction"
     :currencies="CURRENCIES"
