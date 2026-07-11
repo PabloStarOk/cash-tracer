@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { Transaction, TransactionType } from '@/types/transactions'
-import { Column, DataTable, Tag } from 'primevue'
+import { Column, DataTable, Tag, Button } from 'primevue'
 
 interface Props {
   transactions: Transaction[]
 }
 
 defineProps<Props>()
+defineEmits<{ edit: [transaction: Transaction] }>()
 
 const dateFormatter = new Intl.DateTimeFormat(navigator.language, {
   year: 'numeric',
@@ -58,6 +59,20 @@ function capitalizeType(type: TransactionType): string {
     <Column header="Currency" class="min-w-fit w-[7%]">
       <template #body="slotProps">
         {{ slotProps.data.price.currency }}
+      </template>
+    </Column>
+    <Column header="Actions" class="min-w-fit w-[7%]">
+      <template #body="slotProps">
+        <div class="flex gap-2">
+          <Button
+            icon="pi pi-pencil"
+            severity="secondary"
+            variant="outlined"
+            size="small"
+            aria-label="Edit transaction"
+            @click="$emit('edit', slotProps.data)"
+          />
+        </div>
       </template>
     </Column>
     <template #empty>

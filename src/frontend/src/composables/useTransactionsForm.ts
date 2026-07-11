@@ -1,6 +1,6 @@
 import { CONCEPT_MAX_LENGTH } from '@/data/transactions'
-import type { Currency, TransactionType } from '@/types/transactions'
-import { computed, reactive, watch } from 'vue'
+import type { Currency, Transaction, TransactionType } from '@/types/transactions'
+import { computed, reactive, watch, watchEffect, type Ref } from 'vue'
 
 interface TypeOption {
   type: TransactionType
@@ -20,7 +20,10 @@ interface TransactionsFormErrors {
   amount: { valid: boolean; msg?: string }
 }
 
-export function useTransactionForm(currencies: Currency[]) {
+export function useTransactionForm(
+  currencies: Currency[],
+  editingTransaction: Ref<Transaction | undefined>,
+) {
   const defaultCurrency = currencies[0] ?? { code: 'USD', region: 'United States' }
   const typeOptions: TypeOption[] = [
     { type: 'expense', label: 'Expense' },
@@ -52,6 +55,10 @@ export function useTransactionForm(currencies: Currency[]) {
     () => validateAmount(),
   )
 
+  watchEffect(() => {
+    if (editingTransaction.value) setInitialState(editingTransaction.value)
+  })
+
   function validateConcept() {
     errors.concept.valid = !!state.concept && state.concept.length <= CONCEPT_MAX_LENGTH
     if (errors.concept.valid) {
@@ -78,7 +85,18 @@ export function useTransactionForm(currencies: Currency[]) {
     validateAmount()
   }
 
+  function setInitialState(transaction: Transaction) {
+    const types = typeOptions.filter((t) => t.type === transaction.type)
+    const matchedCurrencies = currencies.filter((c) => c.code === transaction.price.currency)
+    state.type = (types.length ? types[0] : typeOptions[0]) as TypeOption
+    state.concept = transaction.concept
+    state.date = transaction.date
+    state.currency = (matchedCurrencies.length ? matchedCurrencies[0] : defaultCurrency) as Currency
+    state.amount = transaction.price.amount
+  }
+
   function reset() {
+    editingTransaction.value = undefined
     state.type = typeOptions[0] as TypeOption
     state.concept = ''
     state.date = new Date()

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTransactionForm } from '@/composables/useTransactionsForm'
-import type { Currency, Price, TransactionType } from '@/types/transactions'
+import type { Currency, Price, Transaction, TransactionType } from '@/types/transactions'
 import {
   Button,
   DatePicker,
@@ -11,6 +11,7 @@ import {
   Message,
   Select,
 } from 'primevue'
+import { computed } from 'vue'
 
 interface Props {
   currencies: Currency[]
@@ -20,20 +21,36 @@ const props = defineProps<Props>()
 const visible = defineModel<boolean>('visible')
 const emit = defineEmits<{
   add: [transactionType: TransactionType, concept: string, date: Date, price: Price]
+  update: [id: number, transactionType: TransactionType, concept: string, date: Date, price: Price]
 }>()
+const editingTransaction = defineModel<Transaction | undefined>('editingTransaction')
+const { typeOptions, state, errors, valid, reset, validate } = useTransactionForm(
+  props.currencies,
+  editingTransaction,
+)
 
-const { typeOptions, state, errors, valid, reset, validate } = useTransactionForm(props.currencies)
+const actionLabel = computed(() => (editingTransaction.value ? 'Save' : 'Add'))
+const title = computed(() => (editingTransaction.value ? 'Edit Transaction' : 'Add Transaction'))
 
 function close() {
   reset()
   visible.value = false
 }
 
-function add() {
+function accept() {
   validate()
   if (!valid.value) return
   const price: Price = { currency: state.currency.code, amount: state.amount as number }
-  emit('add', state.type.type, state.concept?.trim() as string, state.date, price)
+  if (editingTransaction.value) {
+    emit(
+      'update',
+      editingTransaction.value?.id,
+      state.type.type,
+      state.concept?.trim() as string,
+      state.date,
+      price,
+    )
+  } else emit('add', state.type.type, state.concept?.trim() as string, state.date, price)
   close()
 }
 </script>
@@ -41,7 +58,7 @@ function add() {
 <template>
   <Dialog v-model:visible="visible" modal class="max-w-[90dvw]" @after-hide="reset">
     <template #header>
-      <h2 class="font-bold text-xl">Add Transaction</h2>
+      <h2 class="font-bold text-xl">{{ title }}</h2>
     </template>
     <div class="flex flex-col gap-2">
       <div class="flex flex-col md:flex-row gap-2 w-full">
@@ -148,7 +165,7 @@ function add() {
     </div>
     <template #footer>
       <Button label="Cancel" severity="secondary" @click="close" />
-      <Button label="Add" @click="add" />
+      <Button :label="actionLabel" @click="accept" />
     </template>
   </Dialog>
 </template>
