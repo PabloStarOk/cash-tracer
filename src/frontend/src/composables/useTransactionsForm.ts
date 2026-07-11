@@ -1,6 +1,6 @@
 import { CONCEPT_MAX_LENGTH } from '@/data/transactions'
 import type { Currency, Transaction, TransactionType } from '@/types/transactions'
-import { computed, reactive, watch, watchEffect, type Ref } from 'vue'
+import { computed, nextTick, reactive, watch, watchEffect, type Ref } from 'vue'
 
 interface TypeOption {
   type: TransactionType
@@ -44,15 +44,24 @@ export function useTransactionForm(
   })
 
   const valid = computed(() => errors.concept.valid && errors.amount.valid)
+  let isResetting = false
 
   watch(
     () => state.concept,
-    () => validateConcept(),
+    () => {
+      if (!isResetting) {
+        validateConcept()
+      }
+    },
   )
 
   watch(
     () => state.amount,
-    () => validateAmount(),
+    () => {
+      if (!isResetting) {
+        validateAmount()
+      }
+    },
   )
 
   watchEffect(() => {
@@ -95,15 +104,18 @@ export function useTransactionForm(
     state.amount = transaction.price.amount
   }
 
-  function reset() {
+  async function reset() {
+    isResetting = true
     editingTransaction.value = undefined
     state.type = typeOptions[0] as TypeOption
     state.concept = ''
     state.date = new Date()
     state.currency = defaultCurrency
     state.amount = 0
+    await nextTick()
     errors.concept = { valid: true }
     errors.amount = { valid: true }
+    isResetting = false
   }
 
   return {
