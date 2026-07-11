@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Transaction } from '@/types/transactions'
-import { Column, DataTable } from 'primevue'
+import type { Transaction, TransactionType } from '@/types/transactions'
+import { Column, DataTable, Tag } from 'primevue'
 
 interface Props {
   transactions: Transaction[]
@@ -13,6 +13,15 @@ const dateFormatter = new Intl.DateTimeFormat(navigator.language, {
   month: 'long',
   day: 'numeric',
 })
+
+function capitalizeType(type: TransactionType): string {
+  switch (type) {
+    case 'income':
+      return 'Income'
+    case 'expense':
+      return 'Expense'
+  }
+}
 </script>
 
 <template>
@@ -23,7 +32,19 @@ const dateFormatter = new Intl.DateTimeFormat(navigator.language, {
     :rows="10"
     :rowsPerPageOptions="[5, 10, 15, 20, 25, 30, 50]"
   >
-    <Column field="concept" header="Concept" class="text-wrap" />
+    <Column field="concept" header="Concept" class="text-wrap">
+      <template #body="slotProps">
+        <div>
+          <p>
+            {{ slotProps.data.concept }}
+          </p>
+          <Tag
+            :value="capitalizeType(slotProps.data.type)"
+            :severity="slotProps.data.type === 'income' ? 'success' : 'warn'"
+          />
+        </div>
+      </template>
+    </Column>
     <Column header="Date" class="min-w-fit w-[15%]">
       <template #body="slotProps">
         {{ dateFormatter.format(slotProps.data.date) }}
