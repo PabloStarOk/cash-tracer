@@ -1,0 +1,32 @@
+import { TRANSACTIONS } from '@/data/transactions'
+import type { Price, Transaction, TransactionType } from '@/types/transactions'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
+
+export const useTransactionStore = defineStore('transactions', () => {
+  const transactionsMap = ref<Map<number, Transaction>>(new Map(TRANSACTIONS.map((t) => [t.id, t])))
+  const transactions = computed(() => new Array(...transactionsMap.value.values()))
+  const expenses = computed(() => transactions.value.filter((t) => t.type === 'expense'))
+  const incomes = computed(() => transactions.value.filter((t) => t.type === 'income'))
+
+  const nextId = ref(1)
+
+  function add(type: TransactionType, concept: string, date: Date, price: Price) {
+    const transaction: Transaction = {
+      id: nextId.value,
+      concept,
+      type,
+      date,
+      price,
+    }
+    transactionsMap.value.set(transaction.id, transaction)
+    nextId.value++
+  }
+
+  return {
+    transactions,
+    expenses,
+    incomes,
+    add,
+  }
+})
