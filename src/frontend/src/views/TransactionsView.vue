@@ -4,13 +4,20 @@ import TransactionsDialog from '@/components/TransactionsDialog.vue'
 import TransactionsList from '@/components/TransactionsList.vue'
 import { CURRENCIES } from '@/data/transactions'
 import { useTransactionStore } from '@/stores/useTransactionsStore'
+import type { Transaction } from '@/types/transactions'
 import { ref } from 'vue'
 
 const store = useTransactionStore()
 const isDialogVisible = ref(false)
+const editingTransaction = ref<Transaction | undefined>()
 
 function openDialog() {
   isDialogVisible.value = true
+}
+
+function openEditDialog(transaction: Transaction) {
+  editingTransaction.value = transaction
+  openDialog()
 }
 </script>
 
@@ -22,10 +29,17 @@ function openDialog() {
         :expenses="store.expenses"
         :incomes="store.incomes"
         class="flex-1"
+        @edit="openEditDialog"
       />
       <TransactionsBottomBar @add="openDialog" class="sticky bottom-0" />
     </div>
   </div>
 
-  <TransactionsDialog v-model:visible="isDialogVisible" :currencies="CURRENCIES" @add="store.add" />
+  <TransactionsDialog
+    v-model:visible="isDialogVisible"
+    v-model:editingTransaction="editingTransaction"
+    :currencies="CURRENCIES"
+    @add="store.add"
+    @update="store.update"
+  />
 </template>

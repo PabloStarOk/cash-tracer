@@ -23,10 +23,24 @@ export const useTransactionStore = defineStore('transactions', () => {
     nextId.value++
   }
 
+  function update(id: number, type: TransactionType, concept: string, date: Date, price: Price) {
+    const transaction = transactionsMap.value.get(id)
+    if (!transaction) return
+    const updatedTransaction: Transaction = {
+      id,
+      concept,
+      type,
+      date,
+      price,
+    }
+    transactionsMap.value.set(transaction.id, updatedTransaction)
+  }
+
   return {
     transactions,
     expenses,
     incomes,
     add,
+    update,
   }
 })
