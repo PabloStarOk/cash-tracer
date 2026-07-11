@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { Transaction } from '@/types/transactions'
-import { Card, Column, DataTable, Tab, TabList, TabPanel, TabPanels, Tabs } from 'primevue'
+import { Card, Tab, TabList, TabPanel, TabPanels, Tabs } from 'primevue'
+import TransactionsTable from '@/components/TransactionsTable.vue'
 
 interface Props {
+  allTransactions: Transaction[]
   expenses: Transaction[]
 }
 
@@ -35,38 +37,10 @@ const tabs: { type: TabType; label: string; icon: string }[] = [
         </TabList>
         <TabPanels>
           <TabPanel value="all">
-            <p>All</p>
+            <TransactionsTable :transactions="allTransactions" />
           </TabPanel>
           <TabPanel value="expenses">
-            <DataTable
-              :value="expenses"
-              tableClass="min-w-200"
-              paginator
-              :rows="10"
-              :rowsPerPageOptions="[5, 10, 15, 20, 25, 30, 50]"
-            >
-              <Column field="concept" header="Concept" class="text-wrap" />
-              <Column header="Date" class="min-w-fit w-[15%]">
-                <template #body="slotProps">
-                  {{ dateFormatter.format(slotProps.data.date) }}
-                </template>
-              </Column>
-              <Column header="Amount" class="min-w-fit w-[10%]">
-                <template #body="slotProps">
-                  {{ slotProps.data.price.amount }}
-                </template>
-              </Column>
-              <Column header="Currency" class="min-w-fit w-[7%]">
-                <template #body="slotProps">
-                  {{ slotProps.data.price.currency }}
-                </template>
-              </Column>
-              <template #empty>
-                <div class="flex flex-col items-center justify-center p-12 text-neutral-500">
-                  <p>No transactions registered</p>
-                </div>
-              </template>
-            </DataTable>
+            <TransactionsTable :transactions="expenses" />
           </TabPanel>
           <TabPanel value="incomes">
             <p>Incomes</p>
