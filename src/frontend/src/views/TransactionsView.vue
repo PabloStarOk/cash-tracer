@@ -115,6 +115,7 @@ function confirmDeleteTransaction(transaction: Transaction) {
   <div class="flex gap-4 h-full">
     <div class="flex flex-col flex-1 gap-4 max-w-full">
       <TransactionsList
+        v-model:search="store.search"
         :allTransactions="store.transactions"
         :expenses="store.expenses"
         :incomes="store.incomes"

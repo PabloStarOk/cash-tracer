@@ -2,6 +2,7 @@
 import type { Transaction } from '@/types/transactions'
 import { Card, Tab, TabList, TabPanel, TabPanels, Tabs } from 'primevue'
 import TransactionsTable from '@/components/TransactionsTable.vue'
+import SearchBar from '@/components/SearchBar.vue'
 
 interface Props {
   allTransactions: Transaction[]
@@ -14,6 +15,7 @@ defineEmits<{
   edit: [transaction: Transaction]
   delete: [transaction: Transaction]
 }>()
+const search = defineModel<string>('search', { required: true })
 
 type TabType = 'all' | 'expenses' | 'incomes'
 const activeTab: TabType = 'all'
@@ -26,8 +28,11 @@ const tabs: { type: TabType; label: string; icon: string }[] = [
 
 <template>
   <Card>
-    <template #title>
-      <h2>Transactions</h2>
+    <template #header>
+      <div class="flex flex-col gap-2 px-5 pt-5 md:flex-row justify-between">
+        <h2 class="text-xl font-medium">Transactions</h2>
+        <SearchBar v-model="search" class="max-w-md" />
+      </div>
     </template>
     <template #content>
       <Tabs :value="activeTab">

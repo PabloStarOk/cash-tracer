@@ -5,7 +5,13 @@ import { computed, ref } from 'vue'
 
 export const useTransactionStore = defineStore('transactions', () => {
   const transactionsMap = ref<Map<number, Transaction>>(new Map(TRANSACTIONS.map((t) => [t.id, t])))
-  const transactions = computed(() => new Array(...transactionsMap.value.values()))
+  const search = ref<string>('')
+  const transactions = computed(() => {
+    const allTransactions = [...transactionsMap.value.values()]
+    const query = search.value.trim().toLowerCase()
+    if (!query) return allTransactions
+    return allTransactions.filter((t) => t.concept.toLowerCase().includes(query))
+  })
   const expenses = computed(() => transactions.value.filter((t) => t.type === 'expense'))
   const incomes = computed(() => transactions.value.filter((t) => t.type === 'income'))
 
@@ -43,6 +49,7 @@ export const useTransactionStore = defineStore('transactions', () => {
   }
 
   return {
+    search,
     transactions,
     expenses,
     incomes,
