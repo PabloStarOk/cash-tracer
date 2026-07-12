@@ -36,11 +36,18 @@ export const useTransactionStore = defineStore('transactions', () => {
     transactionsMap.value.set(transaction.id, updatedTransaction)
   }
 
+  function remove(id: number) {
+    const transaction = transactionsMap.value.get(id)
+    if (!transaction) return
+    transactionsMap.value.delete(id)
+  }
+
   return {
     transactions,
     expenses,
     incomes,
     add,
     update,
+    remove,
   }
 })

@@ -10,7 +10,10 @@ interface Props {
 }
 
 defineProps<Props>()
-defineEmits<{ edit: [transaction: Transaction] }>()
+defineEmits<{
+  edit: [transaction: Transaction]
+  delete: [transaction: Transaction]
+}>()
 
 type TabType = 'all' | 'expenses' | 'incomes'
 const activeTab: TabType = 'all'
@@ -36,18 +39,21 @@ const tabs: { type: TabType; label: string; icon: string }[] = [
             <TransactionsTable
               :transactions="allTransactions"
               @edit="(transaction) => $emit('edit', transaction)"
+              @delete="(transaction) => $emit('delete', transaction)"
             />
           </TabPanel>
           <TabPanel value="expenses">
             <TransactionsTable
               :transactions="expenses"
               @edit="(transaction) => $emit('edit', transaction)"
+              @delete="(transaction) => $emit('delete', transaction)"
             />
           </TabPanel>
           <TabPanel value="incomes">
             <TransactionsTable
               :transactions="incomes"
               @edit="(transaction) => $emit('edit', transaction)"
+              @delete="(transaction) => $emit('delete', transaction)"
             />
           </TabPanel>
         </TabPanels>

@@ -7,7 +7,10 @@ interface Props {
 }
 
 defineProps<Props>()
-defineEmits<{ edit: [transaction: Transaction] }>()
+defineEmits<{
+  edit: [transaction: Transaction]
+  delete: [transaction: Transaction]
+}>()
 
 const dateFormatter = new Intl.DateTimeFormat(navigator.language, {
   year: 'numeric',
@@ -71,6 +74,14 @@ function capitalizeType(type: TransactionType): string {
             size="small"
             aria-label="Edit transaction"
             @click="$emit('edit', slotProps.data)"
+          />
+          <Button
+            icon="pi pi-trash"
+            severity="danger"
+            variant="outlined"
+            size="small"
+            aria-label="Delete transaction"
+            @click="$emit('delete', slotProps.data)"
           />
         </div>
       </template>
