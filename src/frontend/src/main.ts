@@ -5,6 +5,10 @@ import { PrimeVue } from '@primevue/core'
 import '@/assets/main.css'
 import { ConfirmationService, ToastService } from 'primevue'
 import { primeVueConfig } from '@/plugins/primevue'
+import { useThemeManager } from '@/composables/useThemeManager'
+
+const { initialize } = useThemeManager()
+initialize()
 
 const app = createApp(App)
 

@@ -1,6 +1,7 @@
 import Aura from '@primeuix/themes/aura'
 import { definePreset } from '@primeuix/themes'
 import type { PrimeVueConfiguration } from '@primevue/core'
+import { THEME } from '@/constants/app'
 
 const AppPreset = definePreset(Aura, {
   semantic: {
@@ -23,5 +24,8 @@ const AppPreset = definePreset(Aura, {
 export const primeVueConfig: PrimeVueConfiguration = {
   theme: {
     preset: AppPreset,
+    options: {
+      darkModeSelector: `.${THEME.darkSelector}`,
+    },
   },
 }
