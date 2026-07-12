@@ -32,7 +32,12 @@ const tabs: { type: TabType; label: string; icon: string }[] = [
     <template #content>
       <Tabs :value="activeTab">
         <TabList>
-          <Tab v-for="tab in tabs" :key="tab.type" :value="tab.type">{{ tab.label }}</Tab>
+          <Tab v-for="tab in tabs" :key="tab.type" :value="tab.type">
+            <div class="flex gap-2 items-center">
+              <i :class="`pi ${tab.icon}`" aria-hidden="true"></i>
+              <p>{{ tab.label }}</p>
+            </div>
+          </Tab>
         </TabList>
         <TabPanels>
           <TabPanel value="all">
