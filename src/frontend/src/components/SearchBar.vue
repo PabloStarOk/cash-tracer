@@ -9,7 +9,7 @@ const search = defineModel<string>({ required: true })
       <InputIcon>
         <i class="pi pi-search"></i>
       </InputIcon>
-      <InputText v-model="search" id="transactionSearch" size="small" />
+      <InputText v-model="search" id="transactionSearch" size="small" class="w-full" />
     </IconField>
     <label for="transactionSearch">Search concept</label>
   </FloatLabel>

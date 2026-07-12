@@ -31,7 +31,7 @@ const tabs: { type: TabType; label: string; icon: string }[] = [
     <template #header>
       <div class="flex flex-col gap-2 px-5 pt-5 md:flex-row justify-between">
         <h2 class="text-xl font-medium">Transactions</h2>
-        <SearchBar v-model="search" class="max-w-md" />
+        <SearchBar v-model="search" class="flex-1 max-w-md" />
       </div>
     </template>
     <template #content>
