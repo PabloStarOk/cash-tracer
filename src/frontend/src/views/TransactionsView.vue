@@ -4,15 +4,18 @@ import TransactionsFormDialog from '@/components/TransactionFormDialog.vue'
 import TransactionsList from '@/components/TransactionsList.vue'
 import { CURRENCIES } from '@/data/transactions'
 import { useTransactionStore } from '@/stores/useTransactionsStore'
-import type { Transaction } from '@/types/transactions'
+import type { Price, Transaction, TransactionType } from '@/types/transactions'
 import { ref } from 'vue'
-import { useConfirm } from 'primevue'
+import { useConfirm, useToast } from 'primevue'
 import ConfirmDialog from 'primevue/confirmdialog'
+import Toast from 'primevue/toast'
 
+const toastDuration = 4000
 const store = useTransactionStore()
 const isDialogVisible = ref(false)
 const editingTransaction = ref<Transaction | undefined>()
 const confirm = useConfirm()
+const toast = useToast()
 
 function openDialog() {
   isDialogVisible.value = true
@@ -21,6 +24,55 @@ function openDialog() {
 function openEditDialog(transaction: Transaction) {
   editingTransaction.value = transaction
   openDialog()
+}
+
+function addTransaction(
+  transactionType: TransactionType,
+  concept: string,
+  date: Date,
+  price: Price,
+) {
+  try {
+    store.add(transactionType, concept, date, price)
+    toast.add({
+      severity: 'success',
+      summary: 'Transaction added successfully',
+      detail: `Transaction '${concept}' added.`,
+      life: toastDuration,
+    })
+  } catch {
+    toast.add({
+      severity: 'error',
+      summary: 'Transaction could not be added',
+      detail: `Transaction '${concept}' could not be added due to an unexpected error, try again later.`,
+      life: toastDuration,
+    })
+  }
+}
+
+function updateTransaction(
+  id: number,
+  transactionType: TransactionType,
+  concept: string,
+  date: Date,
+  price: Price,
+) {
+  try {
+    store.update(id, transactionType, concept, date, price)
+    toast.add({
+      severity: 'success',
+      summary: 'Transaction updated successfully',
+      detail: `Transaction '${concept}' udpated.`,
+      life: toastDuration,
+    })
+  } catch {
+    toast.add({
+      severity: 'error',
+      summary: 'Transaction could not be updated',
+      detail: `Transaction '${concept}' could not be updated due to an unexpected error, try again later.`,
+      life: toastDuration,
+    })
+  }
 }
 
 function confirmDeleteTransaction(transaction: Transaction) {
@@ -38,7 +90,22 @@ function confirmDeleteTransaction(transaction: Transaction) {
       variant: 'outlined',
     },
     accept: () => {
-      store.remove(transaction.id)
+      try {
+        store.remove(transaction.id)
+        toast.add({
+          severity: 'success',
+          summary: 'Transaction deleted successfully',
+          detail: `Transaction '${transaction.concept}' deleted.`,
+          life: toastDuration,
+        })
+      } catch {
+        toast.add({
+          severity: 'error',
+          summary: 'Transaction could not be deleted',
+          detail: `Transaction '${transaction.concept}' could not be deleted due to an unexpected error, try again later.`,
+          life: toastDuration,
+        })
+      }
     },
   })
 }
@@ -63,9 +130,10 @@ function confirmDeleteTransaction(transaction: Transaction) {
     v-model:visible="isDialogVisible"
     v-model:editingTransaction="editingTransaction"
     :currencies="CURRENCIES"
-    @add="store.add"
-    @update="store.update"
+    @add="addTransaction"
+    @update="updateTransaction"
   />
 
   <ConfirmDialog class="max-w-[90dvw]" />
+  <Toast position="bottom-left" />
 </template>
