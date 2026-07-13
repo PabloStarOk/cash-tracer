@@ -62,7 +62,7 @@ function updateTransaction(
     toast.add({
       severity: 'success',
       summary: 'Transaction updated successfully',
-      detail: `Transaction '${concept}' udpated.`,
+      detail: `Transaction '${concept}' updated.`,
       life: toastDuration,
     })
   } catch {
@@ -116,6 +116,7 @@ function confirmDeleteTransaction(transaction: Transaction) {
     <div class="flex flex-col flex-1 gap-4 max-w-full">
       <TransactionsList
         v-model:search="store.search"
+        v-model:date="store.date"
         :allTransactions="store.transactions"
         :expenses="store.expenses"
         :incomes="store.incomes"
@@ -123,7 +124,7 @@ function confirmDeleteTransaction(transaction: Transaction) {
         @edit="openEditDialog"
         @delete="confirmDeleteTransaction"
       />
-      <TransactionsBottomBar @add="openDialog" class="sticky bottom-0" />
+      <TransactionsBottomBar v-model:date="store.date" @add="openDialog" class="sticky bottom-0" />
     </div>
   </div>
 
