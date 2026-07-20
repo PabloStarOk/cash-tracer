@@ -1,0 +1,18 @@
+using CashTracer.Application.Dtos;
+using CashTracer.Application.Requests;
+
+namespace CashTracer.Application.Interfaces;
+
+/// <summary>
+/// Defines the contract for a service that handles financial transactions.
+/// </summary>
+public interface ITransactionService
+{
+    /// <summary>
+    /// Adds a new transaction based on the provided request.
+    /// </summary>
+    /// <param name="request">The request containing the transaction details.</param>
+    /// <param name="ct">A token to monitor the request cancellation.</param>
+    /// <returns>A task containing the added transaction.</returns>
+    Task<TransactionDto> AddAsync(AddTransactionRequest request, CancellationToken ct = default);
+}
