@@ -402,3 +402,9 @@ dotnet_diagnostic.SA1201.severity = none
 dotnet_diagnostic.SA1010.severity = none
 # SA1633: A C# code file is missing a standard file header.
 dotnet_diagnostic.SA1633.severity = none
+# SA1206: The keywords within the declaration of an element do not follow a standard ordering scheme.
+dotnet_diagnostic.SA1206.severity = none
+# IDE0036: Order modifiers
+dotnet_diagnostic.IDE0036.severity = warning
+# IDE0130: Namespace does not match folder structure
+dotnet_diagnostic.IDE0130.severity = warning
