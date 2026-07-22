@@ -1,8 +1,10 @@
 using CashTracer.Application.Dtos;
 using CashTracer.Application.Interfaces;
 using CashTracer.Application.Requests;
+using CashTracer.Domain.Common;
 using CashTracer.Domain.Entities;
 using CashTracer.Domain.Repositories;
+using CashTracer.Domain.ValueObjects;
 
 namespace CashTracer.Application.Services;
 
@@ -14,22 +16,32 @@ internal sealed class TransactionService(ITransactionRepository repository)
     : ITransactionService
 {
     /// <inheritdoc/>
-    public async Task<TransactionDto> AddAsync(AddTransactionRequest request, CancellationToken ct = default)
+    public async Task<Result<TransactionDto>> AddAsync(AddTransactionRequest request, CancellationToken ct = default)
     {
-        var newTransaction = new Transaction
+        var moneyResult = Money.Create(request.Currency, request.Amount);
+        if (!moneyResult.IsSuccess)
         {
-            Type = request.Type,
-            Concept = request.Concept,
-            Date = request.Date,
-            Money = request.Money,
-        };
+            return Result<TransactionDto>.Failure(moneyResult.Error);
+        }
 
-        var insertedTransaction = await repository.AddAsync(newTransaction, ct);
-        return new TransactionDto(
-            insertedTransaction.Id,
+        var creationResult = Transaction.Create(
             request.Type,
             request.Concept,
             request.Date,
-            request.Money);
+            moneyResult.Value);
+
+        if (!creationResult.IsSuccess)
+        {
+            return Result<TransactionDto>.Failure(creationResult.Error);
+        }
+
+        var newTransaction = creationResult.Value;
+        var insertedTransaction = await repository.AddAsync(newTransaction, ct);
+        return new TransactionDto(
+            insertedTransaction.Id,
+            insertedTransaction.Type,
+            insertedTransaction.Concept,
+            insertedTransaction.Date,
+            insertedTransaction.Money);
     }
 }

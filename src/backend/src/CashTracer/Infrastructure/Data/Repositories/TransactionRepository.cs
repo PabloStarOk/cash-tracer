@@ -15,16 +15,19 @@ internal sealed class TransactionRepository : ITransactionRepository
     /// <inheritdoc/>
     public Task<Transaction> AddAsync(Transaction transaction, CancellationToken ct = default)
     {
-        var newTransaction = new Transaction
-        {
-            Id = Transactions.Count + 1,
-            Type = transaction.Type,
-            Concept = transaction.Concept,
-            Date = transaction.Date,
-            Money = transaction.Money,
-            CreatedAt = DateTimeOffset.UtcNow,
-        };
+        var creationResult = Transaction.CreateWithId(
+            Transactions.Count + 1,
+            transaction.Type,
+            transaction.Concept,
+            transaction.Date,
+            transaction.Money);
 
+        if (!creationResult.IsSuccess)
+        {
+            throw new InvalidOperationException($"Failed to create transaction due to error: {creationResult.Error.Message}.");
+        }
+
+        var newTransaction = creationResult.Value;
         Transactions.Add(newTransaction);
         return Task.FromResult(newTransaction);
     }

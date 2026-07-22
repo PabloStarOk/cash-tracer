@@ -13,7 +13,7 @@ public static class DependencyInjection
     {
         services.ConfigureHttpJsonOptions(options =>
             options.SerializerOptions.TypeInfoResolverChain.Add(ApiJsonSerializerContext.Default));
-
+        services.AddProblemDetails();
         services.AddOpenApi();
     }
 }
