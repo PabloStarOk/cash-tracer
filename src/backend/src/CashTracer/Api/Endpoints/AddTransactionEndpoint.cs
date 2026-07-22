@@ -1,3 +1,4 @@
+using CashTracer.Api.Extensions;
 using CashTracer.Application.Interfaces;
 using CashTracer.Application.Requests;
 

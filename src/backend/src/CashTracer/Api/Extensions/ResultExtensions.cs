@@ -1,6 +1,6 @@
 using CashTracer.Domain.Common;
 
-namespace CashTracer.Api;
+namespace CashTracer.Api.Extensions;
 
 /// <summary>
 /// Provides extension methods for converting <see cref="Result{T}"/> instances to <see cref="IResult"/> for use in ASP.NET Core minimal APIs.
