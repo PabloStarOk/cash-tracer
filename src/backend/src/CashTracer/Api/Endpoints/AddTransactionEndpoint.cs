@@ -24,7 +24,7 @@ public static class AddTransactionEndpoint
         [FromServices] ITransactionService service,
         CancellationToken ct)
     {
-        var dto = await service.AddAsync(request, ct);
-        return Results.Created(uri: string.Empty, value: dto);
+        var result = await service.AddAsync(request, ct);
+        return result.ToHttpResult(r => Results.Created(uri: string.Empty, value: r.Value));
     }
 }

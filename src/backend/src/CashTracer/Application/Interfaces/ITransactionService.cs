@@ -1,5 +1,6 @@
 using CashTracer.Application.Dtos;
 using CashTracer.Application.Requests;
+using CashTracer.Domain.Common;
 
 namespace CashTracer.Application.Interfaces;
 
@@ -14,5 +15,5 @@ public interface ITransactionService
     /// <param name="request">The request containing the transaction details.</param>
     /// <param name="ct">A token to monitor the request cancellation.</param>
     /// <returns>A task containing the added transaction.</returns>
-    Task<TransactionDto> AddAsync(AddTransactionRequest request, CancellationToken ct = default);
+    Task<Result<TransactionDto>> AddAsync(AddTransactionRequest request, CancellationToken ct = default);
 }

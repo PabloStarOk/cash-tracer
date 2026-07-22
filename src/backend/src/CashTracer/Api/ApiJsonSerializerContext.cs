@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 
 using CashTracer.Application.Dtos;
 using CashTracer.Application.Requests;
+using CashTracer.Domain.Common;
 using CashTracer.Domain.ValueObjects;
 
 namespace CashTracer.Api;
@@ -16,6 +17,7 @@ namespace CashTracer.Api;
     UseStringEnumConverter = true,
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
     ReadCommentHandling = System.Text.Json.JsonCommentHandling.Skip)]
+[JsonSerializable(typeof(Error))]
 [JsonSerializable(typeof(TransactionDto))]
 [JsonSerializable(typeof(AddTransactionRequest))]
 [JsonSerializable(typeof(Money))]

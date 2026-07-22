@@ -1,5 +1,4 @@
 using CashTracer.Domain.Enums;
-using CashTracer.Domain.ValueObjects;
 
 namespace CashTracer.Application.Requests;
 
@@ -9,5 +8,11 @@ namespace CashTracer.Application.Requests;
 /// <param name="Type">The <see cref="TransactionType"/> of the transaction.</param>
 /// <param name="Concept">The concept or description of the transaction.</param>
 /// <param name="Date">The date of the transaction.</param>
-/// <param name="Money">The monetary value of the transaction.</param>
-public sealed record AddTransactionRequest(TransactionType Type, string Concept, DateOnly Date, Money Money);
+/// <param name="Currency">The currency of the transaction.</param>
+/// <param name="Amount">The amount of the transaction.</param>
+public sealed record AddTransactionRequest(
+    TransactionType Type,
+    string Concept,
+    DateOnly Date,
+    string Currency,
+    decimal Amount);
