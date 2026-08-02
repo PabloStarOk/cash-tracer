@@ -22,7 +22,7 @@ public class MoneyTests
 
     [Theory]
     [MemberData(nameof(GetInvalidInput))]
-    public void Create_should_ReturnFailureResult_when_CurrencyOrAmountIsInvalid(
+    public void Create_when_CurrencyOrAmountIsInvalid_should_ReturnFailureResult(
         string currency,
         decimal amount,
         Error error)

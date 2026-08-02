@@ -34,7 +34,7 @@ public class ResultTests
     }
 
     [Fact]
-    public void Failure_should_ThrowArgumentNullException_when_GivenErrorIsNull()
+    public void Failure_when_GivenErrorIsNull_should_ThrowArgumentNullException()
     {
         // Arrange
         Error? error = null;
@@ -44,7 +44,7 @@ public class ResultTests
     }
 
     [Fact]
-    public void ValueProperty_should_ThrowInvalidOperationException_when_ItIsTriedToBeAccessed()
+    public void ValueProperty_when_ItIsTriedToBeAccessed_should_ThrowInvalidOperationException()
     {
         // Arrange
         var error = new Error(ErrorType.Validation, "Test", "Test error message.");

@@ -46,7 +46,7 @@ public class TransactionTests
 
     [Theory]
     [MemberData(nameof(GetInvalidConcepts))]
-    public void Create_should_ReturnFailureResult_when_ConceptIsInvalid(string? invalidConcept, Error error)
+    public void Create_when_ConceptIsInvalid_should_ReturnFailureResult(string? invalidConcept, Error error)
     {
         // Act
         var result = Transaction.Create(Type, invalidConcept!, Date, Money);
@@ -58,7 +58,7 @@ public class TransactionTests
 
     [Theory]
     [MemberData(nameof(GetInvalidConcepts))]
-    public void CreateWithId_should_ReturnFailureResult_when_ConceptIsInvalid(string? invalidConcept, Error error)
+    public void CreateWithId_when_ConceptIsInvalid_should_ReturnFailureResult(string? invalidConcept, Error error)
     {
         // Act
         var result = Transaction.CreateWithId(Id, Type, invalidConcept!, Date, Money);

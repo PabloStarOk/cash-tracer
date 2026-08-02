@@ -30,7 +30,7 @@ public class TransactionServiceTests : IDisposable
 
     [Theory]
     [MemberData(nameof(GetInvalidMoneys))]
-    public async Task AddAsync_should_ReturnFailure_when_MoneyCreationFails(
+    public async Task AddAsync_when_MoneyCreationFails_should_ReturnFailure(
         string invalidCurrency,
         decimal invalidAmount,
         Error error)
@@ -54,7 +54,7 @@ public class TransactionServiceTests : IDisposable
 
     [Theory]
     [MemberData(nameof(GetInvalidConcepts))]
-    public async Task AddAsync_should_ReturnFailure_when_TransactionCreationFails(
+    public async Task AddAsync_when_TransactionCreationFails_should_ReturnFailure(
         string? invalidConcept,
         Error error)
     {
@@ -77,7 +77,7 @@ public class TransactionServiceTests : IDisposable
 
     [Theory]
     [MemberData(nameof(GetValidRequests))]
-    public async Task AddAsync_ShouldReturnSuccess_WhenTransactionIsAddedSuccessfully(AddTransactionRequest request)
+    public async Task AddAsync_when_TransactionIsAddedSuccessfully_should_ReturnSuccess(AddTransactionRequest request)
     {
         // Arrange
         var ct = TestContext.Current.CancellationToken;
