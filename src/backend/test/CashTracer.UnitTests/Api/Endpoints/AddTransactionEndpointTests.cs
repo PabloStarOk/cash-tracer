@@ -49,7 +49,6 @@ public class AddTransactionEndpointTests : IDisposable
         AddTransactionEndpoint.Map(routeBuilder);
 
         // Assert
-
         var endpoint = Assert.Single(
             routeBuilder.DataSources
             .SelectMany(dataSource => dataSource.Endpoints)
