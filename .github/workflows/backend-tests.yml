@@ -1,0 +1,35 @@
+name: Backend tests
+on:
+  push:
+    branches: ["main", "dev"]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-tests.yml"
+  pull_request: 
+    branches: ["main", "dev"]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-tests.yml"
+
+defaults:
+  run:
+    working-directory: ./src/backend
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        config: [Debug, Release]
+        os: [ubuntu-24.04]
+    timeout-minutes: 10
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+      - name: Restore NuGet packages
+        run: dotnet restore
+      - name: Build project
+        run: dotnet build --no-restore -c ${{ matrix.config }}
+      - name: Run tests
+        run: dotnet test --no-restore --no-build -c ${{ matrix.config }}
