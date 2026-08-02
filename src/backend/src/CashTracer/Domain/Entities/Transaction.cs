@@ -118,7 +118,7 @@ public sealed class Transaction
 
         if (concept.Length > MaxConceptLength)
         {
-            return TransactionErrors.ConceptTooLong;
+            return TransactionErrors.NullOrEmptyConcept;
         }
 
         return null;
