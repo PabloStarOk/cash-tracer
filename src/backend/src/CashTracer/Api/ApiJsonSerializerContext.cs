@@ -19,6 +19,7 @@ namespace CashTracer.Api;
     ReadCommentHandling = System.Text.Json.JsonCommentHandling.Skip)]
 [JsonSerializable(typeof(Error))]
 [JsonSerializable(typeof(TransactionDto))]
+[JsonSerializable(typeof(IReadOnlyList<TransactionDto>))]
 [JsonSerializable(typeof(AddTransactionRequest))]
 [JsonSerializable(typeof(Money))]
 public partial class ApiJsonSerializerContext : JsonSerializerContext

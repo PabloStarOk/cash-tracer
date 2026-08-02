@@ -12,6 +12,7 @@ public static class TransactionEndpointGroup
     public static void MapGroup(IEndpointRouteBuilder routeBuilder)
     {
         var group = routeBuilder.MapGroup("transactions");
+        GetTransactionsEndpoint.Map(group);
         AddTransactionEndpoint.Map(group);
     }
 }

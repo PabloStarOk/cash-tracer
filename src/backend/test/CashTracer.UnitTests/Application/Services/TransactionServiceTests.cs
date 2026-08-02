@@ -103,6 +103,32 @@ public class TransactionServiceTests : IDisposable
         Assert.Equal(request.Amount, result.Value.Money.Amount);
     }
 
+    [Fact]
+    public async Task GetAllAsync_when_RepositoryReturnsTransactions_should_ReturnProjectedDtos()
+    {
+        // Arrange
+        var ct = TestContext.Current.CancellationToken;
+        var transaction = CreateTransaction(
+            id: 7,
+            type: TransactionType.Income,
+            concept: "Salary",
+            date: new DateOnly(2026, 3, 15),
+            currency: "USD",
+            amount: 3000m);
+        _repositoryMock.Setup(r => r.GetAllAsync(ct)).ReturnsAsync([transaction]);
+
+        // Act
+        var result = await _transactionService.GetAllAsync(ct);
+
+        // Assert
+        var dto = Assert.Single(result);
+        Assert.Equal(transaction.Id, dto.Id);
+        Assert.Equal(transaction.Type, dto.Type);
+        Assert.Equal(transaction.Concept, dto.Concept);
+        Assert.Equal(transaction.Date, dto.Date);
+        Assert.Equal(transaction.Money, dto.Money);
+    }
+
     public static TheoryData<string, decimal, Error> GetInvalidMoneys()
     {
         return new()
@@ -156,5 +182,17 @@ public class TransactionServiceTests : IDisposable
                 "VES",
                 10000000m),
         ];
+    }
+
+    private static Transaction CreateTransaction(
+        int id,
+        TransactionType type,
+        string concept,
+        DateOnly date,
+        string currency,
+        decimal amount)
+    {
+        var money = Money.Create(currency, amount).Value!;
+        return Transaction.CreateWithId(id, type, concept, date, money).Value!;
     }
 }

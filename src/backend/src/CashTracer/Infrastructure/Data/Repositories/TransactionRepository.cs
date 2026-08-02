@@ -31,4 +31,14 @@ internal sealed class TransactionRepository : ITransactionRepository
         Transactions.Add(newTransaction);
         return Task.FromResult(newTransaction);
     }
+
+    /// <inheritdoc/>
+    public Task<IReadOnlyList<Transaction>> GetAllAsync(CancellationToken ct = default)
+    {
+        var entities = Transactions
+            .OrderByDescending(t => t.Date)
+            .ThenByDescending(t => t.Id)
+            .ToArray();
+        return Task.FromResult<IReadOnlyList<Transaction>>(entities);
+    }
 }
