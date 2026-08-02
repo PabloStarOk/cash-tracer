@@ -20,7 +20,14 @@ public static class AddTransactionEndpoint
         routeBuilder.MapPost(string.Empty, HandleAsync);
     }
 
-    private static async Task<IResult> HandleAsync(
+    /// <summary>
+    /// Documents the endpoint for adding a new transaction.
+    /// </summary>
+    /// <param name="request">The request containing the details of the transaction to add.</param>
+    /// <param name="service">The service used to add the transaction.</param>
+    /// <param name="ct">The cancellation token.</param>
+    /// <returns>A result indicating the outcome of the operation.</returns>
+    public static async Task<IResult> HandleAsync(
         [FromBody] AddTransactionRequest request,
         [FromServices] ITransactionService service,
         CancellationToken ct)
