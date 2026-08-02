@@ -36,6 +36,7 @@ public class TransactionServiceTests : IDisposable
         Error error)
     {
         // Arrange
+        var ct = TestContext.Current.CancellationToken;
         var request = new AddTransactionRequest(
             TransactionType.Income,
             "Test concept",
@@ -44,7 +45,7 @@ public class TransactionServiceTests : IDisposable
             invalidAmount);
 
         // Act
-        var result = await _transactionService.AddAsync(request);
+        var result = await _transactionService.AddAsync(request, ct);
 
         // Assert
         Assert.False(result.IsSuccess);
@@ -58,6 +59,7 @@ public class TransactionServiceTests : IDisposable
         Error error)
     {
         // Arrange
+        var ct = TestContext.Current.CancellationToken;
         var request = new AddTransactionRequest(
             TransactionType.Income,
             invalidConcept!,
@@ -66,7 +68,7 @@ public class TransactionServiceTests : IDisposable
             100m);
 
         // Act
-        var result = await _transactionService.AddAsync(request);
+        var result = await _transactionService.AddAsync(request, ct);
 
         // Assert
         Assert.False(result.IsSuccess);
@@ -78,6 +80,7 @@ public class TransactionServiceTests : IDisposable
     public async Task AddAsync_ShouldReturnSuccess_WhenTransactionIsAddedSuccessfully(AddTransactionRequest request)
     {
         // Arrange
+        var ct = TestContext.Current.CancellationToken;
         var transactionId = 1;
         var money = Money.Create(request.Currency, request.Amount).Value!;
         var transaction = Transaction
@@ -88,7 +91,7 @@ public class TransactionServiceTests : IDisposable
             .ReturnsAsync(transaction);
 
         // Act
-        var result = await _transactionService.AddAsync(request);
+        var result = await _transactionService.AddAsync(request, ct);
 
         // Assert
         Assert.True(result.IsSuccess);
