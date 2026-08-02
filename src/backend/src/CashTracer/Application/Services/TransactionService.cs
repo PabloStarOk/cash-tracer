@@ -44,4 +44,18 @@ internal sealed class TransactionService(ITransactionRepository repository)
             insertedTransaction.Date,
             insertedTransaction.Money);
     }
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<TransactionDto>> GetAllAsync(CancellationToken ct = default)
+    {
+        var transactions = await repository.GetAllAsync(ct);
+        return transactions
+            .Select(transaction => new TransactionDto(
+                transaction.Id,
+                transaction.Type,
+                transaction.Concept,
+                transaction.Date,
+                transaction.Money))
+            .ToArray();
+    }
 }

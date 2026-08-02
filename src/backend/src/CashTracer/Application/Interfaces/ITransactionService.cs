@@ -16,4 +16,11 @@ public interface ITransactionService
     /// <param name="ct">A token to monitor the request cancellation.</param>
     /// <returns>A task containing the added transaction.</returns>
     Task<Result<TransactionDto>> AddAsync(AddTransactionRequest request, CancellationToken ct = default);
+
+    /// <summary>
+    /// Retrieves all stored transactions.
+    /// </summary>
+    /// <param name="ct">A token to monitor the request cancellation.</param>
+    /// <returns>A task containing all stored transactions.</returns>
+    Task<IReadOnlyList<TransactionDto>> GetAllAsync(CancellationToken ct = default);
 }
