@@ -8,6 +8,11 @@ namespace CashTracer.Api.Extensions;
 public static class ResultExtensions
 {
     /// <summary>
+    /// The key used to store the error code in the problem details extensions.
+    /// </summary>
+    public const string ErrorCodeKey = "code";
+
+    /// <summary>
     /// Converts a <see cref="Result{T}"/> to an <see cref="IResult"/> for use in ASP.NET Core minimal APIs.
     /// </summary>
     /// <typeparam name="T">The type of the value contained in the result.</typeparam>
@@ -25,6 +30,7 @@ public static class ResultExtensions
         return result.Error.Type switch
         {
             ErrorType.Validation => ValidationProblem(result.Error),
+            ErrorType.NotFound => NotFoundProblem(result.Error),
             _ => throw new InvalidOperationException($"Unexpected error type: {result.Error.Type}."),
         };
     }
@@ -39,5 +45,16 @@ public static class ResultExtensions
         return Results.ValidationProblem(
             errors,
             statusCode: StatusCodes.Status400BadRequest);
+    }
+
+    private static IResult NotFoundProblem(Error error)
+    {
+        return Results.Problem(
+            detail: error.Message,
+            statusCode: StatusCodes.Status404NotFound,
+            extensions: new Dictionary<string, object?>
+            {
+                [ErrorCodeKey] = error.Code,
+            });
     }
 }

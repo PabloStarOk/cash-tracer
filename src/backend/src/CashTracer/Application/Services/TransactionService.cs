@@ -1,4 +1,5 @@
 using CashTracer.Application.Dtos;
+using CashTracer.Application.Errors;
 using CashTracer.Application.Interfaces;
 using CashTracer.Application.Requests;
 using CashTracer.Domain.Common;
@@ -57,5 +58,43 @@ internal sealed class TransactionService(ITransactionRepository repository)
                 transaction.Date,
                 transaction.Money))
             .ToArray();
+    }
+
+    /// <inheritdoc/>
+    public async Task<Result<TransactionDto>> UpdateAsync(int id, UpdateTransactionRequest request, CancellationToken ct = default)
+    {
+        var transaction = await repository.GetByIdAsync(id, ct);
+        if (transaction is null)
+        {
+            return Result<TransactionDto>.Failure(TransactionServiceErrors.TransactionNotFound(id));
+        }
+
+        Money? updatedMoney = null;
+        if (request.Currency is not null || request.Amount is not null)
+        {
+            var currency = request.Currency ?? transaction.Money.Currency;
+            var amount = request.Amount ?? transaction.Money.Amount;
+            var moneyResult = Money.Create(currency, amount);
+            if (!moneyResult.IsSuccess)
+            {
+                return Result<TransactionDto>.Failure(moneyResult.Error);
+            }
+
+            updatedMoney = moneyResult.Value;
+        }
+
+        var updateResult = transaction.Update(request.Type, request.Concept, request.Date, updatedMoney);
+        if (!updateResult.IsSuccess)
+        {
+            return Result<TransactionDto>.Failure(updateResult.Error);
+        }
+
+        await repository.UpdateAsync(updateResult.Value, ct);
+        return new TransactionDto(
+            updateResult.Value.Id,
+            updateResult.Value.Type,
+            updateResult.Value.Concept,
+            updateResult.Value.Date,
+            updateResult.Value.Money);
     }
 }
