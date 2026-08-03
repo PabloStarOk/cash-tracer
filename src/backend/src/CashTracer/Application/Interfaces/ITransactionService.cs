@@ -23,4 +23,13 @@ public interface ITransactionService
     /// <param name="ct">A token to monitor the request cancellation.</param>
     /// <returns>A task containing all stored transactions.</returns>
     Task<IReadOnlyList<TransactionDto>> GetAllAsync(CancellationToken ct = default);
+
+    /// <summary>
+    /// Updates an existing transaction using the provided request.
+    /// </summary>
+    /// <param name="id">The transaction identifier.</param>
+    /// <param name="request">The request containing optional fields to update.</param>
+    /// <param name="ct">A token to monitor the request cancellation.</param>
+    /// <returns>A task containing the updated transaction.</returns>
+    Task<Result<TransactionDto>> UpdateAsync(int id, UpdateTransactionRequest request, CancellationToken ct = default);
 }

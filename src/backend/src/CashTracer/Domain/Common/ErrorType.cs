@@ -9,4 +9,9 @@ public enum ErrorType
     /// Indicates that the error is related to validation, such as invalid input or business rule violations.
     /// </summary>
     Validation,
+
+    /// <summary>
+    /// Indicates that the requested resource does not exist.
+    /// </summary>
+    NotFound,
 }

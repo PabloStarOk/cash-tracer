@@ -18,10 +18,11 @@ namespace CashTracer.Api;
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
     ReadCommentHandling = System.Text.Json.JsonCommentHandling.Skip)]
 [JsonSerializable(typeof(Error))]
+[JsonSerializable(typeof(Money))]
 [JsonSerializable(typeof(TransactionDto))]
 [JsonSerializable(typeof(IReadOnlyList<TransactionDto>))]
 [JsonSerializable(typeof(AddTransactionRequest))]
-[JsonSerializable(typeof(Money))]
+[JsonSerializable(typeof(UpdateTransactionRequest))]
 public partial class ApiJsonSerializerContext : JsonSerializerContext
 {
 }

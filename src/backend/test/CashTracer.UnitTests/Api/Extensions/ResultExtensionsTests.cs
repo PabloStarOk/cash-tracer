@@ -1,4 +1,5 @@
 using CashTracer.Api.Extensions;
+using CashTracer.Application.Errors;
 using CashTracer.Domain.Common;
 using CashTracer.Domain.Errors;
 
@@ -39,5 +40,24 @@ public class ResultExtensionsTests
         Assert.Equal(StatusCodes.Status400BadRequest, problemDetails.Status);
         Assert.True(problemDetails.Errors.TryGetValue(TransactionErrors.ConceptTooLong.Code, out var errorMessages));
         Assert.Single(errorMessages, TransactionErrors.ConceptTooLong.Message);
+    }
+
+    [Fact]
+    public void ToHttpResult_when_ResultIsNotFoundFailure_should_Return404ProblemDetails()
+    {
+        // Arrange
+        var error = TransactionServiceErrors.TransactionNotFound(999);
+        var result = Result<string>.Failure(error);
+
+        // Act
+        var httpResult = result.ToHttpResult(_ => Results.Ok("Created"));
+
+        // Assert
+        var problemResult = Assert.IsType<ProblemHttpResult>(httpResult);
+        Assert.Equal(StatusCodes.Status404NotFound, problemResult.ProblemDetails.Status);
+        Assert.Equal(error.Message, problemResult.ProblemDetails.Detail);
+        Assert.True(problemResult.ProblemDetails.Extensions
+            .TryGetValue(ResultExtensions.ErrorCodeKey, out var errorCode));
+        Assert.Equal(error.Code, errorCode);
     }
 }

@@ -10,13 +10,15 @@ namespace CashTracer.Infrastructure.Data.Repositories;
 /// </summary>
 internal sealed class TransactionRepository : ITransactionRepository
 {
-    private static readonly ConcurrentBag<Transaction> Transactions = [];
+    private static readonly ConcurrentDictionary<int, Transaction> Transactions = [];
+    private static int _nextTransactionId;
 
     /// <inheritdoc/>
     public Task<Transaction> AddAsync(Transaction transaction, CancellationToken ct = default)
     {
+        var newId = Interlocked.Increment(ref _nextTransactionId);
         var creationResult = Transaction.CreateWithId(
-            Transactions.Count + 1,
+            newId,
             transaction.Type,
             transaction.Concept,
             transaction.Date,
@@ -28,17 +30,41 @@ internal sealed class TransactionRepository : ITransactionRepository
         }
 
         var newTransaction = creationResult.Value;
-        Transactions.Add(newTransaction);
+
+        if (!Transactions.TryAdd(newTransaction.Id, newTransaction))
+        {
+            throw new InvalidOperationException($"Transaction with id '{newTransaction.Id}' already exists.");
+        }
+
         return Task.FromResult(newTransaction);
     }
 
     /// <inheritdoc/>
     public Task<IReadOnlyList<Transaction>> GetAllAsync(CancellationToken ct = default)
     {
-        var entities = Transactions
+        var entities = Transactions.Values
             .OrderByDescending(t => t.Date)
             .ThenByDescending(t => t.Id)
             .ToArray();
         return Task.FromResult<IReadOnlyList<Transaction>>(entities);
+    }
+
+    /// <inheritdoc/>
+    public Task<Transaction?> GetByIdAsync(int id, CancellationToken ct = default)
+    {
+        Transactions.TryGetValue(id, out var transaction);
+        return Task.FromResult(transaction);
+    }
+
+    /// <inheritdoc/>
+    public Task UpdateAsync(Transaction transaction, CancellationToken ct = default)
+    {
+        if (!Transactions.ContainsKey(transaction.Id))
+        {
+            throw new InvalidOperationException($"Transaction with id '{transaction.Id}' was not found.");
+        }
+
+        Transactions[transaction.Id] = transaction;
+        return Task.CompletedTask;
     }
 }

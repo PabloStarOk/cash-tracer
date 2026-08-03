@@ -1,6 +1,7 @@
 using CashTracer.Application.Interfaces;
 using CashTracer.Application.Requests;
 using CashTracer.Application.Services;
+using CashTracer.Application.Errors;
 using CashTracer.Domain.Common;
 using CashTracer.Domain.Entities;
 using CashTracer.Domain.Enums;
@@ -14,6 +15,7 @@ namespace CashTracer.UnitTests.Application.Services;
 
 public class TransactionServiceTests : IDisposable
 {
+    private readonly Transaction _stubTransaction;
     private readonly Mock<ITransactionRepository> _repositoryMock;
     private readonly ITransactionService _transactionService;
 
@@ -21,6 +23,13 @@ public class TransactionServiceTests : IDisposable
     {
         _repositoryMock = new Mock<ITransactionRepository>();
         _transactionService = new TransactionService(_repositoryMock.Object);
+        _stubTransaction = CreateTransaction(
+            id: 7,
+            type: TransactionType.Income,
+            concept: "Salary",
+            date: new DateOnly(2026, 3, 15),
+            currency: "USD",
+            amount: 3000m);
     }
 
     public void Dispose()
@@ -129,6 +138,101 @@ public class TransactionServiceTests : IDisposable
         Assert.Equal(transaction.Money, dto.Money);
     }
 
+    [Theory]
+    [MemberData(nameof(GetValidUpdateCombinations))]
+    public async Task UpdateAsync_when_TransactionIsUpdatedSuccessfully_should_ReturnSuccess(
+        TransactionType? newType,
+        string? newConcept,
+        DateOnly? newDate,
+        Money? newMoney)
+    {
+        // Arrange
+        var ct = TestContext.Current.CancellationToken;
+        var request = new UpdateTransactionRequest
+        {
+            Type = newType,
+            Concept = newConcept,
+            Date = newDate,
+            Amount = newMoney?.Amount,
+            Currency = newMoney?.Currency,
+        };
+        var expected = Transaction.CreateWithId(
+            _stubTransaction.Id,
+            newType ?? _stubTransaction.Type,
+            newConcept ?? _stubTransaction.Concept,
+            newDate ?? _stubTransaction.Date,
+            newMoney ?? _stubTransaction.Money).Value!;
+        _repositoryMock.Setup(r => r.GetByIdAsync(_stubTransaction.Id, ct)).ReturnsAsync(_stubTransaction);
+        _repositoryMock.Setup(r => r.UpdateAsync(It.Is<Transaction>(t => t.Id == expected.Id), ct));
+
+        // Act
+        var result = await _transactionService.UpdateAsync(_stubTransaction.Id, request, ct);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(expected.Id, result.Value.Id);
+        Assert.Equal(expected.Type, result.Value.Type);
+        Assert.Equal(expected.Concept, result.Value.Concept);
+        Assert.Equal(expected.Date, result.Value.Date);
+        Assert.Equal(expected.Money, result.Value.Money);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_when_TransactionIsNotFound_should_ReturnFailure()
+    {
+        // Arrange
+        var ct = TestContext.Current.CancellationToken;
+        var request = new UpdateTransactionRequest { Concept = "Updated" };
+        var id = 10;
+        _repositoryMock.Setup(r => r.GetByIdAsync(id, ct)).ReturnsAsync((Transaction?)null);
+
+        // Act
+        var result = await _transactionService.UpdateAsync(id, request, ct);
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(TransactionServiceErrors.TransactionNotFound(id), result.Error);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetInvalidMoneys))]
+    public async Task UpdateAsync_when_MoneyCreationFails_should_ReturnFailure(
+        string currency,
+        decimal amount,
+        Error error)
+    {
+        // Arrange
+        var ct = TestContext.Current.CancellationToken;
+        var request = new UpdateTransactionRequest { Currency = currency, Amount = amount };
+        _repositoryMock.Setup(r => r.GetByIdAsync(_stubTransaction.Id, ct)).ReturnsAsync(_stubTransaction);
+
+        // Act
+        var result = await _transactionService.UpdateAsync(_stubTransaction.Id, request, ct);
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(error, result.Error);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetInvalidUpdateConcepts))]
+    public async Task UpdateAsync_when_TransactionCreationFails_should_ReturnFailure(
+        string? invalidConcept,
+        Error error)
+    {
+        // Arrange
+        var ct = TestContext.Current.CancellationToken;
+        var request = new UpdateTransactionRequest { Concept = invalidConcept };
+        _repositoryMock.Setup(r => r.GetByIdAsync(_stubTransaction.Id, ct)).ReturnsAsync(_stubTransaction);
+
+        // Act
+        var result = await _transactionService.UpdateAsync(_stubTransaction.Id, request, ct);
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(error, result.Error);
+    }
+
     public static TheoryData<string, decimal, Error> GetInvalidMoneys()
     {
         return new()
@@ -147,6 +251,16 @@ public class TransactionServiceTests : IDisposable
         return new()
         {
             { null, TransactionErrors.NullOrEmptyConcept },
+            { string.Empty, TransactionErrors.NullOrEmptyConcept },
+            { "   ", TransactionErrors.NullOrEmptyConcept },
+            { new string('*', Transaction.MaxConceptLength + 1), TransactionErrors.ConceptTooLong }
+        };
+    }
+
+    public static TheoryData<string?, Error> GetInvalidUpdateConcepts()
+    {
+        return new()
+        {
             { string.Empty, TransactionErrors.NullOrEmptyConcept },
             { "   ", TransactionErrors.NullOrEmptyConcept },
             { new string('*', Transaction.MaxConceptLength + 1), TransactionErrors.ConceptTooLong }
@@ -182,6 +296,18 @@ public class TransactionServiceTests : IDisposable
                 "VES",
                 10000000m),
         ];
+    }
+
+    public static TheoryData<TransactionType?, string?, DateOnly?, Money?> GetValidUpdateCombinations()
+    {
+        return new()
+        {
+            { TransactionType.Expense, "Groceries", new DateOnly(2023, 2, 1), Money.Create("USD", 250.00m).Value! },
+            { null, "Updated concept", null, null },
+            { null, null, new DateOnly(2023, 3, 1), null },
+            { null, null, null, Money.Create("EUR", 150.00m).Value! },
+            { TransactionType.Income, null, null, null }
+        };
     }
 
     private static Transaction CreateTransaction(
