@@ -81,7 +81,7 @@ public sealed class Transaction
     {
         var validationError = ValidateConcept(concept);
         return validationError is not null
-            ? Result<Transaction>.Failure(validationError)
+            ? validationError
             : new Transaction(
                 type,
                 concept,
@@ -102,7 +102,7 @@ public sealed class Transaction
     {
         var validationError = ValidateConcept(concept);
         return validationError is not null
-            ? Result<Transaction>.Failure(validationError)
+            ? validationError
             : new Transaction(
                 id,
                 type,
@@ -119,7 +119,7 @@ public sealed class Transaction
     /// <param name="newDate">The updated date, if any.</param>
     /// <param name="newMoney">The updated money value, if any.</param>
     /// <returns>The updated transaction or a validation error.</returns>
-    public Result<Transaction> Update(
+    public Result Update(
         TransactionType? newType = null,
         string? newConcept = null,
         DateOnly? newDate = null,
@@ -129,7 +129,7 @@ public sealed class Transaction
         var validationError = ValidateConcept(updatedConcept);
         if (validationError is not null)
         {
-            return Result<Transaction>.Failure(validationError);
+            return validationError;
         }
 
         Type = newType ?? Type;
@@ -137,7 +137,7 @@ public sealed class Transaction
         Date = newDate ?? Date;
         Money = newMoney ?? Money;
         UpdatedAt = DateTimeOffset.UtcNow;
-        return this;
+        return Result.Success;
     }
 
     private static Error? ValidateConcept(string concept)

@@ -22,7 +22,7 @@ internal sealed class TransactionService(ITransactionRepository repository)
         var moneyResult = Money.Create(request.Currency, request.Amount);
         if (!moneyResult.IsSuccess)
         {
-            return Result<TransactionDto>.Failure(moneyResult.Error);
+            return moneyResult.Error;
         }
 
         var creationResult = Transaction.Create(
@@ -33,7 +33,7 @@ internal sealed class TransactionService(ITransactionRepository repository)
 
         if (!creationResult.IsSuccess)
         {
-            return Result<TransactionDto>.Failure(creationResult.Error);
+            return creationResult.Error;
         }
 
         var newTransaction = creationResult.Value;
@@ -66,7 +66,7 @@ internal sealed class TransactionService(ITransactionRepository repository)
         var transaction = await repository.GetByIdAsync(id, ct);
         if (transaction is null)
         {
-            return Result<TransactionDto>.Failure(TransactionServiceErrors.TransactionNotFound(id));
+            return TransactionServiceErrors.TransactionNotFound(id);
         }
 
         Money? updatedMoney = null;
@@ -77,7 +77,7 @@ internal sealed class TransactionService(ITransactionRepository repository)
             var moneyResult = Money.Create(currency, amount);
             if (!moneyResult.IsSuccess)
             {
-                return Result<TransactionDto>.Failure(moneyResult.Error);
+                return moneyResult.Error;
             }
 
             updatedMoney = moneyResult.Value;
@@ -86,15 +86,15 @@ internal sealed class TransactionService(ITransactionRepository repository)
         var updateResult = transaction.Update(request.Type, request.Concept, request.Date, updatedMoney);
         if (!updateResult.IsSuccess)
         {
-            return Result<TransactionDto>.Failure(updateResult.Error);
+            return updateResult.Error;
         }
 
-        await repository.UpdateAsync(updateResult.Value, ct);
+        await repository.UpdateAsync(transaction, ct);
         return new TransactionDto(
-            updateResult.Value.Id,
-            updateResult.Value.Type,
-            updateResult.Value.Concept,
-            updateResult.Value.Date,
-            updateResult.Value.Money);
+            transaction.Id,
+            transaction.Type,
+            transaction.Concept,
+            transaction.Date,
+            transaction.Money);
     }
 }

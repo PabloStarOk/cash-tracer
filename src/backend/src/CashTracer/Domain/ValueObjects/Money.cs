@@ -34,12 +34,12 @@ public sealed record Money
     {
         if (string.IsNullOrWhiteSpace(currency) || currency.Length is not 3)
         {
-            return Result<Money>.Failure(MoneyErrors.InvalidCurrency);
+            return MoneyErrors.InvalidCurrency;
         }
 
         if (amount <= 0)
         {
-            return Result<Money>.Failure(MoneyErrors.InvalidAmount);
+            return MoneyErrors.InvalidAmount;
         }
 
         return new Money(currency, amount);

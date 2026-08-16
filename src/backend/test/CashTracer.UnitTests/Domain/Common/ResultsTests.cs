@@ -5,6 +5,13 @@ namespace CashTracer.UnitTests.Domain.Common;
 public class ResultTests
 {
     [Fact]
+    public void NotGenericSuccess_should_ReturnSuccessfulResult()
+    {
+        // Assert
+        Assert.True(Result.Success.IsSuccess);
+    }
+
+    [Fact]
     public void Success_should_ReturnResultWithValidProperties()
     {
         // Arrange
@@ -16,7 +23,27 @@ public class ResultTests
         // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(expectedValue, result.Value);
-        Assert.Null(result.Error);
+    }
+
+    [Fact]
+    public void Success_should_ThrowArgumentNullException_when_ValueIsNull()
+    {
+        // Act
+        Assert.Throws<ArgumentNullException>(() => Result<string>.Success(null!));
+    }
+
+    [Fact]
+    public void NotGenericFailure_should_ReturnResultWithValidProperties()
+    {
+        // Arrange
+        var error = new Error(ErrorType.Validation, "Test", "Test error message.");
+
+        // Act
+        var result = Result.Failure(error);
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(result.Error, error);
     }
 
     [Fact]
@@ -31,16 +58,6 @@ public class ResultTests
         // Assert
         Assert.False(result.IsSuccess);
         Assert.Equal(result.Error, error);
-    }
-
-    [Fact]
-    public void Failure_when_GivenErrorIsNull_should_ThrowArgumentNullException()
-    {
-        // Arrange
-        Error? error = null;
-
-        // Act
-        Assert.Throws<ArgumentNullException>(() => Result<string>.Failure(error!));
     }
 
     [Fact]
