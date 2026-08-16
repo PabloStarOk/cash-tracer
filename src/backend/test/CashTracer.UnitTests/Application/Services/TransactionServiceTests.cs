@@ -163,7 +163,7 @@ public class TransactionServiceTests : IDisposable
             newDate ?? _stubTransaction.Date,
             newMoney ?? _stubTransaction.Money).Value!;
         _repositoryMock.Setup(r => r.GetByIdAsync(_stubTransaction.Id, ct)).ReturnsAsync(_stubTransaction);
-        _repositoryMock.Setup(r => r.UpdateAsync(It.Is<Transaction>(t => t.Id == expected.Id), ct));
+        _repositoryMock.Setup(r => r.UpdateAsync(expected, ct));
 
         // Act
         var result = await _transactionService.UpdateAsync(_stubTransaction.Id, request, ct);

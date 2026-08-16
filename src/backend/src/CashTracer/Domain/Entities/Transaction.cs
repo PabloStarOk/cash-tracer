@@ -8,17 +8,12 @@ namespace CashTracer.Domain.Entities;
 /// <summary>
 /// Represents a financial transaction.
 /// </summary>
-public sealed class Transaction
+public sealed class Transaction : Entity
 {
     /// <summary>
     /// Gets the maximum allowed length for the concept of a transaction.
     /// </summary>
     public const int MaxConceptLength = 50;
-
-    /// <summary>
-    /// Gets the unique identifier of the transaction.
-    /// </summary>
-    public int Id { get; }
 
     /// <summary>
     /// Gets the type of the transaction.
