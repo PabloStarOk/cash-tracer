@@ -388,6 +388,8 @@ dotnet_naming_style.s_camelcase.word_separator =
 dotnet_naming_style.s_camelcase.capitalization = camel_case
 
 # StyleCop
+# SA0001: XML comment analysis is disabled due to project configuration 
+dotnet_diagnostic.SA0001.severity = none
 # SA1101: Prefix local variables with 'this.'
 dotnet_diagnostic.SA1101.severity = none
 # SA1200: A C# using directive is placed outside of a namespace element.
