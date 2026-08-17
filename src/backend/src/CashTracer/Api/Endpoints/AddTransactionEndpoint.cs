@@ -38,6 +38,6 @@ public static class AddTransactionEndpoint
         CancellationToken ct)
     {
         var result = await service.AddAsync(request, ct);
-        return result.ToHttpResult(r => Results.Created(uri: string.Empty, value: r.Value));
+        return result.ToHttpResult(r => Results.Ok(r.Value));
     }
 }
