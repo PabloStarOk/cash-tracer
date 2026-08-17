@@ -13,6 +13,8 @@ public static class ConfigurationExtensions
     /// <param name="app">The web application to configure the API for.</param>
     public static void ConfigureApi(this WebApplication app)
     {
+        app.UseExceptionHandler();
+        app.UseStatusCodePages();
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
