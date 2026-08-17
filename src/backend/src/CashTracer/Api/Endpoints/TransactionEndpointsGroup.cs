@@ -15,5 +15,6 @@ public static class TransactionEndpointGroup
         GetTransactionsEndpoint.Map(group);
         UpdateTransactionEndpoint.Map(group);
         AddTransactionEndpoint.Map(group);
+        DeleteTransactionEndpoint.Map(group);
     }
 }
