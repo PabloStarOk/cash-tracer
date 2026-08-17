@@ -3,12 +3,12 @@ on:
   push:
     branches: ["main", "dev"]
     paths:
-      - "backend/**"
+      - "src/backend/**"
       - ".github/workflows/backend-tests.yml"
   pull_request: 
     branches: ["main", "dev"]
     paths:
-      - "backend/**"
+      - "src/backend/**"
       - ".github/workflows/backend-tests.yml"
 
 defaults:
