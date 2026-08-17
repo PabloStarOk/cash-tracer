@@ -57,7 +57,7 @@ public class AddTransactionEndpointTests : IDisposable
     }
 
     [Fact]
-    public async Task HandleAsync_when_ServiceReturnsSuccess_should_ReturnCreatedResult()
+    public async Task HandleAsync_when_ServiceReturnsSuccess_should_ReturnOkResult()
     {
         // Arrange
         var ct = TestContext.Current.CancellationToken;
@@ -70,9 +70,8 @@ public class AddTransactionEndpointTests : IDisposable
         var result = await AddTransactionEndpoint.HandleAsync(StubRequest, _serviceMock.Object, ct);
 
         // Assert
-        var createdResult = Assert.IsType<Created<TransactionDto>>(result);
-        Assert.Equal(string.Empty, createdResult.Location);
-        Assert.Equal(expectedResult.Value, createdResult.Value);
+        var okResult = Assert.IsType<Ok<TransactionDto>>(result);
+        Assert.Equal(expectedResult.Value, okResult.Value);
     }
 
     [Theory]
