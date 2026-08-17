@@ -32,4 +32,12 @@ public interface ITransactionService
     /// <param name="ct">A token to monitor the request cancellation.</param>
     /// <returns>A task containing the updated transaction.</returns>
     Task<Result<TransactionDto>> UpdateAsync(int id, UpdateTransactionRequest request, CancellationToken ct = default);
+
+    /// <summary>
+    /// Deletes a transaction from the service.
+    /// </summary>
+    /// <param name="id">The transaction identifier.</param>
+    /// <param name="ct">A token to monitor the request cancellation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task<Result> DeleteAsync(int id, CancellationToken ct = default);
 }

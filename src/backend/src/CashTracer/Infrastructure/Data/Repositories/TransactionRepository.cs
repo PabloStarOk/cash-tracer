@@ -67,4 +67,12 @@ internal sealed class TransactionRepository : ITransactionRepository
         Transactions[transaction.Id] = transaction;
         return Task.CompletedTask;
     }
+
+    /// <inheritdoc/>
+    public Task DeleteAsync(int id, CancellationToken ct = default)
+    {
+        return Transactions.TryRemove(id, out _)
+            ? Task.CompletedTask
+            : throw new InvalidOperationException($"Transaction with id '{id}' was not found.");
+    }
 }

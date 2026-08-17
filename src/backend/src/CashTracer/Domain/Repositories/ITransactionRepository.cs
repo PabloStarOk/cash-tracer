@@ -37,4 +37,12 @@ public interface ITransactionRepository
     /// <param name="ct">A token to monitor the request cancellation.</param>
     /// <returns>A task containing the updated transaction.</returns>
     Task UpdateAsync(Transaction transaction, CancellationToken ct = default);
+
+    /// <summary>
+    /// Deletes a transaction from the repository.
+    /// </summary>
+    /// <param name="id">The transaction identifier.</param>
+    /// <param name="ct">A token to monitor the request cancellation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task DeleteAsync(int id, CancellationToken ct = default);
 }

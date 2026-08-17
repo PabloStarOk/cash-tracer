@@ -233,6 +233,55 @@ public class TransactionServiceTests : IDisposable
         Assert.Equal(error, result.Error);
     }
 
+    [Fact]
+    public async Task DeleteAsync_when_TransactionExists_should_ReturnSuccessResult()
+    {
+        // Arrange
+        var id = _stubTransaction.Id;
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        _repositoryMock.Setup(r => r.GetByIdAsync(id, ct)).ReturnsAsync(_stubTransaction);
+        _repositoryMock.Setup(r => r.DeleteAsync(id, ct));
+
+        // Act
+        Result result = await _transactionService.DeleteAsync(id, ct);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_when_TransactionExists_should_CallCorrectRepositoryMethod()
+    {
+        // Arrange
+        var id = _stubTransaction.Id;
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        _repositoryMock.Setup(r => r.GetByIdAsync(id, ct)).ReturnsAsync(_stubTransaction);
+        _repositoryMock.Setup(r => r.DeleteAsync(id, ct));
+
+        // Act
+        await _transactionService.DeleteAsync(id, ct);
+
+        // Assert
+        _repositoryMock.Verify(r => r.DeleteAsync(id, ct), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_when_TransactionNotExists_should_ReturnFailureResult()
+    {
+        // Arrange
+        var id = 23;
+        var expectedError = TransactionServiceErrors.TransactionNotFound(id);
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        _repositoryMock.Setup(r => r.GetByIdAsync(id, ct)).ReturnsAsync((Transaction?)null);
+
+        // Act
+        Result result = await _transactionService.DeleteAsync(id, ct);
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(expectedError, result.Error);
+    }
+
     public static TheoryData<string, decimal, Error> GetInvalidMoneys()
     {
         return new()

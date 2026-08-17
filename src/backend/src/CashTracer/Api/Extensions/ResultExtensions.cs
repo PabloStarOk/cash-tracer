@@ -12,6 +12,11 @@ public static class ResultExtensions
     /// </summary>
     public const string ErrorCodeKey = "code";
 
+    public static IResult ToHttpResult(this Result result, Func<Result, IResult> onSuccess)
+    {
+        return result.IsSuccess ? onSuccess(result) : CreateResultFromError(result.Error);
+    }
+
     /// <summary>
     /// Converts a <see cref="Result{T}"/> to an <see cref="IResult"/> for use in ASP.NET Core minimal APIs.
     /// </summary>
@@ -22,16 +27,16 @@ public static class ResultExtensions
     public static IResult ToHttpResult<T>(this Result<T> result, Func<Result<T>, IResult> onSuccess)
         where T : notnull
     {
-        if (result.IsSuccess)
-        {
-            return onSuccess(result);
-        }
+        return result.IsSuccess ? onSuccess(result) : CreateResultFromError(result.Error);
+    }
 
-        return result.Error.Type switch
+    private static IResult CreateResultFromError(Error error)
+    {
+        return error.Type switch
         {
-            ErrorType.Validation => ValidationProblem(result.Error),
-            ErrorType.NotFound => NotFoundProblem(result.Error),
-            _ => throw new InvalidOperationException($"Unexpected error type: {result.Error.Type}."),
+            ErrorType.Validation => ValidationProblem(error),
+            ErrorType.NotFound => NotFoundProblem(error),
+            _ => throw new InvalidOperationException($"Unexpected error type: {error.Type}."),
         };
     }
 

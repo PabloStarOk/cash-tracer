@@ -97,4 +97,17 @@ internal sealed class TransactionService(ITransactionRepository repository)
             transaction.Date,
             transaction.Money);
     }
+
+    /// <inheritdoc/>
+    public async Task<Result> DeleteAsync(int id, CancellationToken ct = default)
+    {
+        var transaction = await repository.GetByIdAsync(id, ct);
+        if (transaction is null)
+        {
+            return TransactionServiceErrors.TransactionNotFound(id);
+        }
+
+        await repository.DeleteAsync(id, ct);
+        return Result.Success;
+    }
 }
