@@ -53,7 +53,10 @@ public class AddTransactionEndpointTests : IDisposable
             routeBuilder.DataSources
             .SelectMany(dataSource => dataSource.Endpoints)
             .OfType<RouteEndpoint>());
+        var httpMethods = endpoint.Metadata.GetMetadata<HttpMethodMetadata>()?.HttpMethods;
         Assert.Equal(string.Empty, endpoint.RoutePattern.RawText);
+        Assert.NotNull(httpMethods);
+        Assert.Single(httpMethods, x => x.ToString() == HttpMethods.Post);
     }
 
     [Fact]
