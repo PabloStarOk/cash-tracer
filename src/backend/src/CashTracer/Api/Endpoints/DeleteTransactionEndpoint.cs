@@ -16,7 +16,11 @@ public static class DeleteTransactionEndpoint
     /// <param name="routeBuilder">The route builder to map the endpoint to.</param>
     public static void Map(IEndpointRouteBuilder routeBuilder)
     {
-        routeBuilder.MapDelete("{id}", HandleAsync);
+        routeBuilder.MapDelete("{id}", HandleAsync)
+            .WithSummary("Delete transaction")
+            .WithDescription("Deletes an existing financial transaction.")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound);
     }
 
     /// <summary>

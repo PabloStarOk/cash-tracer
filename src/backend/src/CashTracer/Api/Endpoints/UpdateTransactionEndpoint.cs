@@ -1,4 +1,5 @@
 using CashTracer.Api.Extensions;
+using CashTracer.Application.Dtos;
 using CashTracer.Application.Interfaces;
 using CashTracer.Application.Requests;
 
@@ -17,7 +18,12 @@ public static class UpdateTransactionEndpoint
     /// <param name="routeBuilder">The route builder to map the endpoint to.</param>
     public static void Map(IEndpointRouteBuilder routeBuilder)
     {
-        routeBuilder.MapPatch("{id:int}", HandleAsync);
+        routeBuilder.MapPatch("{id:int}", HandleAsync)
+            .WithSummary("Update transaction")
+            .WithDescription("Updates an existing financial transaction.")
+            .Produces<TransactionDto>(StatusCodes.Status200OK)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status404NotFound);
     }
 
     /// <summary>
