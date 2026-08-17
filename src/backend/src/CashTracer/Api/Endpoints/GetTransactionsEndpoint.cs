@@ -1,4 +1,6 @@
+using CashTracer.Application.Dtos;
 using CashTracer.Application.Interfaces;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace CashTracer.Api.Endpoints;
@@ -14,7 +16,10 @@ public static class GetTransactionsEndpoint
     /// <param name="routeBuilder">The route builder to map the endpoint to.</param>
     public static void Map(IEndpointRouteBuilder routeBuilder)
     {
-        routeBuilder.MapGet(string.Empty, HandleAsync);
+        routeBuilder.MapGet(string.Empty, HandleAsync)
+            .WithSummary("Get all transactions")
+            .WithDescription("Retrieves all stored financial transactions.")
+            .Produces<IReadOnlyList<TransactionDto>>(StatusCodes.Status200OK);
     }
 
     /// <summary>

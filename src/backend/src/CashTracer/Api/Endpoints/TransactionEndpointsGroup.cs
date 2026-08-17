@@ -11,7 +11,9 @@ public static class TransactionEndpointGroup
     /// <param name="routeBuilder">The route builder to map the endpoint group to.</param>
     public static void MapGroup(IEndpointRouteBuilder routeBuilder)
     {
-        var group = routeBuilder.MapGroup("transactions");
+        var group = routeBuilder.MapGroup("transactions")
+            .WithTags("Transactions")
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
         GetTransactionsEndpoint.Map(group);
         UpdateTransactionEndpoint.Map(group);
         AddTransactionEndpoint.Map(group);

@@ -1,4 +1,5 @@
 using CashTracer.Api.Extensions;
+using CashTracer.Application.Dtos;
 using CashTracer.Application.Interfaces;
 using CashTracer.Application.Requests;
 
@@ -17,7 +18,11 @@ public static class AddTransactionEndpoint
     /// <param name="routeBuilder">The route builder to map the endpoint to.</param>
     public static void Map(IEndpointRouteBuilder routeBuilder)
     {
-        routeBuilder.MapPost(string.Empty, HandleAsync);
+        routeBuilder.MapPost(string.Empty, HandleAsync)
+            .WithSummary("Add transaction")
+            .WithDescription("Adds a new financial transaction.")
+            .Produces<TransactionDto>(StatusCodes.Status201Created)
+            .ProducesValidationProblem();
     }
 
     /// <summary>
