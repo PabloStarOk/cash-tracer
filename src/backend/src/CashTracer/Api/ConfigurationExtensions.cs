@@ -1,5 +1,7 @@
 using CashTracer.Api.Endpoints;
 
+using Scalar.AspNetCore;
+
 namespace CashTracer.Api;
 
 /// <summary>
@@ -18,6 +20,7 @@ public static class ConfigurationExtensions
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
+            app.MapScalarApiReference("docs");
         }
 
         TransactionEndpointGroup.MapGroup(app);
