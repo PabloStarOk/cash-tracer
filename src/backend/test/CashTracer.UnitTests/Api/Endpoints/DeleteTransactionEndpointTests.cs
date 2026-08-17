@@ -3,20 +3,48 @@ using CashTracer.Application.Errors;
 using CashTracer.Application.Interfaces;
 using CashTracer.Domain.Common;
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Routing;
 
 using Moq;
 
 namespace CashTracer.UnitTests.Api.Endpoints;
 
-public class DeleteTransactionEndpointTests
+public class DeleteTransactionEndpointTests : IDisposable
 {
     private readonly Mock<ITransactionService> _serviceMock;
 
     public DeleteTransactionEndpointTests()
     {
         _serviceMock = new Mock<ITransactionService>();
+    }
+
+    public void Dispose()
+    {
+        _serviceMock.VerifyAll();
+    }
+
+    [Fact]
+    public void Map_should_AddEndpointToTheGivenRoute()
+    {
+        // Arrange
+        using var app = WebApplication.CreateBuilder().Build();
+        var routeBuilder = (IEndpointRouteBuilder)app;
+
+        // Act
+        DeleteTransactionEndpoint.Map(routeBuilder);
+
+        // Assert
+        var endpoint = Assert.Single(
+            routeBuilder.DataSources
+                .SelectMany(dataSource => dataSource.Endpoints)
+                .OfType<RouteEndpoint>());
+        var httpMethods = endpoint.Metadata.GetMetadata<HttpMethodMetadata>()?.HttpMethods;
+        Assert.Equal("{id}", endpoint.RoutePattern.RawText);
+        Assert.NotNull(httpMethods);
+        Assert.Single(httpMethods, x => x.ToString() == HttpMethods.Delete);
     }
 
     [Fact]
