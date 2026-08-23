@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/CashTracer.Domain/CashTracer.Domain.csproj" />
     <Project Path="src/CashTracer/CashTracer.csproj" />
   </Folder>
   <Folder Name="/test/">

@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CashTracer\CashTracer.csproj" />
+    <ProjectReference Include="..\..\src\CashTracer.Domain\CashTracer.Domain.csproj" />
   </ItemGroup>
 
 </Project>
