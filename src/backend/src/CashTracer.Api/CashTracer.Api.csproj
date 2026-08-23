@@ -29,6 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CashTracer.Infrastructure\CashTracer.Infrastructure.csproj" />
     <ProjectReference Include="..\CashTracer.Application\CashTracer.Application.csproj" />
+    <ProjectReference Include="..\CashTracer.Infrastructure.Persistence.Sqlite\CashTracer.Infrastructure.Persistence.Sqlite.csproj" />
   </ItemGroup>
   
 </Project>

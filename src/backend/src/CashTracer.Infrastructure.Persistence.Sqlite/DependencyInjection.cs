@@ -1,4 +1,5 @@
 using CashTracer.Infrastructure.Persistence.Sqlite.Factories;
+using CashTracer.Infrastructure.Persistence.Sqlite.Migrations;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,6 +20,7 @@ public static class DependencyInjection
         services.AddSingleton<SqlConnectionFactory>();
         services.AddSingleton<ISqlConnectionFactory>(sp => sp.GetRequiredService<SqlConnectionFactory>());
         services.AddHostedService(sp => sp.GetRequiredService<SqlConnectionFactory>());
+        services.AddHostedService<SqlMigrator>();
         return services;
     }
 }
