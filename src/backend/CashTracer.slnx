@@ -3,6 +3,7 @@
     <Project Path="src/CashTracer.Api/CashTracer.Api.csproj" />
     <Project Path="src/CashTracer.Application/CashTracer.Application.csproj" />
     <Project Path="src/CashTracer.Domain/CashTracer.Domain.csproj" />
+    <Project Path="src/CashTracer.Infrastructure.Persistence.Sqlite/CashTracer.Infrastructure.Persistence.Sqlite.csproj" />
     <Project Path="src/CashTracer.Infrastructure/CashTracer.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/test/">
