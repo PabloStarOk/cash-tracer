@@ -1,6 +1,8 @@
 using CashTracer.Application.Interfaces;
 using CashTracer.Application.Services;
 
+using Microsoft.Extensions.DependencyInjection;
+
 namespace CashTracer.Application;
 
 /// <summary>
