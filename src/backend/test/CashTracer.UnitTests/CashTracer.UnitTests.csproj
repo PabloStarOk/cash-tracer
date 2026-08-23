@@ -20,7 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\CashTracer\CashTracer.csproj" />
+    <ProjectReference Include="..\..\src\CashTracer.Domain\CashTracer.Domain.csproj" />
+    <ProjectReference Include="..\..\src\CashTracer.Application\CashTracer.Application.csproj" />
+    <ProjectReference Include="..\..\src\CashTracer.Api\CashTracer.Api.csproj" />
   </ItemGroup>
 
 </Project>

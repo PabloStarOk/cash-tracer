@@ -5,7 +5,7 @@ using CashTracer.Application.Requests;
 using CashTracer.Domain.Common;
 using CashTracer.Domain.ValueObjects;
 
-namespace CashTracer.Api;
+namespace CashTracer.Api.Serialization;
 
 /// <summary>
 /// Represents the JSON serializer context for the CashTracer API, providing serialization options and type mappings

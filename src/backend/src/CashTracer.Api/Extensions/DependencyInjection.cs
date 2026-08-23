@@ -1,4 +1,6 @@
-namespace CashTracer.Api;
+using CashTracer.Api.Serialization;
+
+namespace CashTracer.Api.Extensions;
 
 /// <summary>
 /// Extension methods for configuring API services in the dependency injection container.

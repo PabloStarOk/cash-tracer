@@ -1,4 +1,4 @@
-using CashTracer.Api;
+using CashTracer.Api.Extensions;
 using CashTracer.Application;
 using CashTracer.Infrastructure;
 

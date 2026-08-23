@@ -1,6 +1,8 @@
 using CashTracer.Domain.Repositories;
 using CashTracer.Infrastructure.Data.Repositories;
 
+using Microsoft.Extensions.DependencyInjection;
+
 namespace CashTracer.Infrastructure;
 
 /// <summary>

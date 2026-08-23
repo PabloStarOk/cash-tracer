@@ -1,6 +1,9 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="src/CashTracer/CashTracer.csproj" />
+    <Project Path="src/CashTracer.Api/CashTracer.Api.csproj" />
+    <Project Path="src/CashTracer.Application/CashTracer.Application.csproj" />
+    <Project Path="src/CashTracer.Domain/CashTracer.Domain.csproj" />
+    <Project Path="src/CashTracer.Infrastructure/CashTracer.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/test/">
     <Project Path="test/CashTracer.UnitTests/CashTracer.UnitTests.csproj" />
