@@ -2,7 +2,7 @@ using CashTracer.Api.Endpoints;
 
 using Scalar.AspNetCore;
 
-namespace CashTracer.Api;
+namespace CashTracer.Api.Extensions;
 
 /// <summary>
 /// Extension methods for configuring the CashTracer API in the web application.
