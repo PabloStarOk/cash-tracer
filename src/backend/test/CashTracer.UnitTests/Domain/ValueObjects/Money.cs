@@ -35,6 +35,18 @@ public class MoneyTests
         Assert.Equal(error, result.Error);
     }
 
+    [Theory]
+    [MemberData(nameof(GetInvalidInput))]
+    public void Reconstruct_when_CurrencyOrAmountIsInvalid_should_ThrowArgumentException(
+        string currency,
+        decimal amount,
+        Error error)
+    {
+        // Assert
+        var exception = Assert.Throws<ArgumentException>(() => Money.Reconstruct(currency, amount));
+        Assert.Contains(error.Message, exception.Message);
+    }
+
     public static TheoryData<string, decimal, Error> GetInvalidInput()
     {
         return new()

@@ -65,7 +65,7 @@ public class UpdateTransactionEndpointTests : IDisposable
         // Arrange
         var id = 10;
         var ct = TestContext.Current.CancellationToken;
-        var money = Money.Create("COP", 1000m).Value!;
+        var money = Money.Reconstruct("COP", 1000m);
         var dto = new TransactionDto(id, TransactionType.Expense, "Updated concept", new DateOnly(2026, 1, 1), money);
         var expectedResult = Result<TransactionDto>.Success(dto);
         _serviceMock.Setup(s => s.UpdateAsync(id, StubRequest, ct)).ReturnsAsync(expectedResult);

@@ -45,14 +45,22 @@ public sealed class Transaction : Entity
     /// </summary>
     public DateTimeOffset? UpdatedAt { get; private set; }
 
-    private Transaction(int id, TransactionType type, string concept, DateOnly date, Money money)
+    private Transaction(
+        int id,
+        TransactionType type,
+        string concept,
+        DateOnly date,
+        Money money,
+        DateTimeOffset createdAt,
+        DateTimeOffset? updatedAt)
     {
         Id = id;
         Type = type;
         Concept = concept;
         Date = date;
         Money = money;
-        CreatedAt = DateTimeOffset.UtcNow;
+        CreatedAt = createdAt;
+        UpdatedAt = updatedAt;
     }
 
     private Transaction(TransactionType type, string concept, DateOnly date, Money money)
@@ -92,18 +100,33 @@ public sealed class Transaction : Entity
     /// <param name="concept">The concept or description of the transaction.</param>
     /// <param name="date">The date of the transaction.</param>
     /// <param name="money">The monetary value of the transaction.</param>
+    /// <param name="createdAt">A <see cref="DateTimeOffset"/> when the transaction was created.</param>
+    /// <param name="updatedAt">The last time the transaction was updated or null if it hasn't.</param>
     /// <returns>A <see cref="Result{Transaction}"/> containing the created <see cref="Transaction"/> instance or an error.</returns>
-    public static Result<Transaction> CreateWithId(int id, TransactionType type, string concept, DateOnly date, Money money)
+    /// <exception cref="ArgumentException">When the given concept is invalid.</exception>
+    public static Transaction Rehydrate(
+        int id,
+        TransactionType type,
+        string concept,
+        DateOnly date,
+        Money money,
+        DateTimeOffset createdAt,
+        DateTimeOffset? updatedAt)
     {
         var validationError = ValidateConcept(concept);
-        return validationError is not null
-            ? validationError
-            : new Transaction(
+        if (validationError is not null)
+        {
+            throw new ArgumentException(validationError.Value.Message, nameof(concept));
+        }
+
+        return new Transaction(
                 id,
                 type,
                 concept,
                 date,
-                money);
+                money,
+                createdAt,
+                updatedAt);
     }
 
     /// <summary>

@@ -55,7 +55,7 @@ public class GetTransactionsEndpointTests : IDisposable
     {
         // Arrange
         var ct = TestContext.Current.CancellationToken;
-        var money = Money.Create("COP", 12000m).Value!;
+        var money = Money.Reconstruct("COP", 12000m);
         IReadOnlyList<TransactionDto> expectedTransactions =
         [
             new TransactionDto(1, TransactionType.Expense, "Market", new DateOnly(2026, 2, 1), money),

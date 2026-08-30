@@ -17,19 +17,14 @@ internal sealed class TransactionRepository : ITransactionRepository
     public Task<Transaction> AddAsync(Transaction transaction, CancellationToken ct = default)
     {
         var newId = Interlocked.Increment(ref _nextTransactionId);
-        var creationResult = Transaction.CreateWithId(
+        var newTransaction = Transaction.Rehydrate(
             newId,
             transaction.Type,
             transaction.Concept,
             transaction.Date,
-            transaction.Money);
-
-        if (!creationResult.IsSuccess)
-        {
-            throw new InvalidOperationException($"Failed to create transaction due to error: {creationResult.Error.Message}.");
-        }
-
-        var newTransaction = creationResult.Value;
+            transaction.Money,
+            transaction.CreatedAt,
+            transaction.UpdatedAt);
 
         if (!Transactions.TryAdd(newTransaction.Id, newTransaction))
         {
