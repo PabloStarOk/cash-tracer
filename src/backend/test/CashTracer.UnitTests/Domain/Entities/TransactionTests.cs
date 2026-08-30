@@ -12,7 +12,9 @@ public class TransactionTests
     private static readonly string StubConcept = "Test concept";
     private static readonly TransactionType StubType = TransactionType.Income;
     private static readonly DateOnly StubDate = new(2023, 1, 1);
-    private static readonly Money StubMoney = Money.Create("COP", 100.00m).Value!;
+    private static readonly Money StubMoney = Money.Reconstruct("COP", 100.00m);
+    private static readonly DateTimeOffset StubCreatedAt = DateTimeOffset.FromUnixTimeSeconds(1777000);
+    private static readonly DateTimeOffset StubUpdatedAt = DateTimeOffset.FromUnixTimeSeconds(1997000);
 
     [Theory]
     [MemberData(nameof(GetValidConcepts))]
@@ -31,18 +33,19 @@ public class TransactionTests
 
     [Theory]
     [MemberData(nameof(GetValidConcepts))]
-    public void CreateWithId_should_ReturnSuccessResultWithExpectedTransaction(string concept)
+    public void Rehydrate_should_TransactionWithExpectedProperties(string concept)
     {
         // Act
-        var result = Transaction.CreateWithId(StubId, StubType, concept, StubDate, StubMoney);
+        var actual = Transaction.Rehydrate(StubId, StubType, concept, StubDate, StubMoney, StubCreatedAt, StubUpdatedAt);
 
         // Arrange
-        Assert.True(result.IsSuccess);
-        Assert.Equal(StubId, result.Value.Id);
-        Assert.Equal(StubType, result.Value.Type);
-        Assert.Equal(concept, result.Value.Concept);
-        Assert.Equal(StubDate, result.Value.Date);
-        Assert.Equal(StubMoney, result.Value.Money);
+        Assert.Equal(StubId, actual.Id);
+        Assert.Equal(StubType, actual.Type);
+        Assert.Equal(concept, actual.Concept);
+        Assert.Equal(StubDate, actual.Date);
+        Assert.Equal(StubMoney, actual.Money);
+        Assert.Equal(StubCreatedAt, actual.CreatedAt);
+        Assert.Equal(StubUpdatedAt, actual.UpdatedAt);
     }
 
     [Theory]
@@ -59,14 +62,12 @@ public class TransactionTests
 
     [Theory]
     [MemberData(nameof(GetInvalidConcepts))]
-    public void CreateWithId_when_ConceptIsInvalid_should_ReturnFailureResult(string? invalidConcept, Error error)
+    public void Rehydrate_when_ConceptIsInvalid_should_ThrowArgumentException(string? invalidConcept, Error error)
     {
-        // Act
-        var result = Transaction.CreateWithId(StubId, StubType, invalidConcept!, StubDate, StubMoney);
-
-        // Arrange
-        Assert.False(result.IsSuccess);
-        Assert.Equal(error, result.Error);
+        // Assert
+        var exception = Assert.Throws<ArgumentException>(() =>
+            Transaction.Rehydrate(StubId, StubType, invalidConcept!, StubDate, StubMoney, StubCreatedAt, StubUpdatedAt));
+        Assert.Contains(error.Message, exception.Message);
     }
 
     [Theory]
@@ -78,7 +79,8 @@ public class TransactionTests
         Money? newMoney)
     {
         // Arrange
-        var transaction = Transaction.CreateWithId(StubId, StubType, StubConcept, StubDate, StubMoney).Value!;
+        var transaction =
+            Transaction.Rehydrate(StubId, StubType, StubConcept, StubDate, StubMoney, StubCreatedAt, StubUpdatedAt);
         var expectedType = newType ?? StubType;
         var expectedConcept = newConcept ?? StubConcept;
         var expectedDate = newDate ?? StubDate;
@@ -104,7 +106,8 @@ public class TransactionTests
         Error expectedError)
     {
         // Arrange
-        var transaction = Transaction.CreateWithId(StubId, StubType, StubConcept, StubDate, StubMoney).Value!;
+        var transaction =
+            Transaction.Rehydrate(StubId, StubType, StubConcept, StubDate, StubMoney, StubCreatedAt, StubUpdatedAt);
 
         // Act
         var result = transaction.Update(newConcept: invalidConcept);
@@ -116,7 +119,7 @@ public class TransactionTests
         Assert.Equal(StubConcept, transaction.Concept);
         Assert.Equal(StubDate, transaction.Date);
         Assert.Equal(StubMoney, transaction.Money);
-        Assert.Null(transaction.UpdatedAt);
+        Assert.Equal(StubUpdatedAt, transaction.UpdatedAt);
     }
 
     public static TheoryData<string> GetValidConcepts()
@@ -143,10 +146,10 @@ public class TransactionTests
     {
         return new()
         {
-            { TransactionType.Expense, "Groceries", new DateOnly(2023, 2, 1), Money.Create("USD", 250.00m).Value! },
+            { TransactionType.Expense, "Groceries", new DateOnly(2023, 2, 1), Money.Reconstruct("USD", 250.00m) },
             { null, "Updated concept", null, null },
             { null, null, new DateOnly(2023, 3, 1), null },
-            { null, null, null, Money.Create("EUR", 150.00m).Value! },
+            { null, null, null, Money.Reconstruct("EUR", 150.00m) },
             { TransactionType.Income, null, null, null }
         };
     }

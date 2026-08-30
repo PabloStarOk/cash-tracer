@@ -37,13 +37,13 @@ internal sealed class TransactionService(ITransactionRepository repository)
         }
 
         var newTransaction = creationResult.Value;
-        var insertedTransaction = await repository.AddAsync(newTransaction, ct);
+        var newTransactionId = await repository.AddAsync(newTransaction, ct);
         return new TransactionDto(
-            insertedTransaction.Id,
-            insertedTransaction.Type,
-            insertedTransaction.Concept,
-            insertedTransaction.Date,
-            insertedTransaction.Money);
+            newTransactionId,
+            newTransaction.Type,
+            newTransaction.Concept,
+            newTransaction.Date,
+            newTransaction.Money);
     }
 
     /// <inheritdoc/>

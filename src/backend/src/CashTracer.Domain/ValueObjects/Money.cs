@@ -44,4 +44,26 @@ public sealed record Money
 
         return new Money(currency, amount);
     }
+
+    /// <summary>
+    /// Creates a new instance of <see cref="Money"/> with the specified currency and amount.
+    /// </summary>
+    /// <param name="currency">The currency of the monetary amount.</param>
+    /// <param name="amount">The amount of the monetary amount.</param>
+    /// <returns>A <see cref="Result{Money}"/> containing the created <see cref="Money"/> instance or an error.</returns>
+    /// <exception cref="ArgumentException">When the given currency or amount are invalid.</exception>
+    public static Money Reconstruct(string currency, decimal amount)
+    {
+        if (string.IsNullOrWhiteSpace(currency) || currency.Length is not 3)
+        {
+            throw new ArgumentException(MoneyErrors.InvalidCurrency.Message, nameof(currency));
+        }
+
+        if (amount <= 0)
+        {
+            throw new ArgumentException(MoneyErrors.InvalidAmount.Message, nameof(amount));
+        }
+
+        return new Money(currency, amount);
+    }
 }

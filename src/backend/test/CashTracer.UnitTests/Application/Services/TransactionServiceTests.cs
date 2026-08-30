@@ -91,13 +91,9 @@ public class TransactionServiceTests : IDisposable
         // Arrange
         var ct = TestContext.Current.CancellationToken;
         var transactionId = 1;
-        var money = Money.Create(request.Currency, request.Amount).Value!;
-        var transaction = Transaction
-            .CreateWithId(transactionId, request.Type, request.Concept, request.Date, money)
-            .Value!;
         _repositoryMock
             .Setup(r => r.AddAsync(It.IsAny<Transaction>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(transaction);
+            .ReturnsAsync(transactionId);
 
         // Act
         var result = await _transactionService.AddAsync(request, ct);
@@ -156,12 +152,14 @@ public class TransactionServiceTests : IDisposable
             Amount = newMoney?.Amount,
             Currency = newMoney?.Currency,
         };
-        var expected = Transaction.CreateWithId(
+        var expected = Transaction.Rehydrate(
             _stubTransaction.Id,
             newType ?? _stubTransaction.Type,
             newConcept ?? _stubTransaction.Concept,
             newDate ?? _stubTransaction.Date,
-            newMoney ?? _stubTransaction.Money).Value!;
+            newMoney ?? _stubTransaction.Money,
+            createdAt: DateTimeOffset.UtcNow,
+            updatedAt: DateTimeOffset.UtcNow);
         _repositoryMock.Setup(r => r.GetByIdAsync(_stubTransaction.Id, ct)).ReturnsAsync(_stubTransaction);
         _repositoryMock.Setup(r => r.UpdateAsync(expected, ct));
 
@@ -351,10 +349,10 @@ public class TransactionServiceTests : IDisposable
     {
         return new()
         {
-            { TransactionType.Expense, "Groceries", new DateOnly(2023, 2, 1), Money.Create("USD", 250.00m).Value! },
+            { TransactionType.Expense, "Groceries", new DateOnly(2023, 2, 1), Money.Reconstruct("USD", 250.00m) },
             { null, "Updated concept", null, null },
             { null, null, new DateOnly(2023, 3, 1), null },
-            { null, null, null, Money.Create("EUR", 150.00m).Value! },
+            { null, null, null, Money.Reconstruct("EUR", 150.00m) },
             { TransactionType.Income, null, null, null }
         };
     }
@@ -367,7 +365,7 @@ public class TransactionServiceTests : IDisposable
         string currency,
         decimal amount)
     {
-        var money = Money.Create(currency, amount).Value!;
-        return Transaction.CreateWithId(id, type, concept, date, money).Value!;
+        var money = Money.Reconstruct(currency, amount);
+        return Transaction.Rehydrate(id, type, concept, date, money, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow);
     }
 }

@@ -12,8 +12,8 @@ public interface ITransactionRepository
     /// </summary>
     /// <param name="transaction">The transaction to add.</param>
     /// <param name="ct">A token to monitor the request cancellation.</param>
-    /// <returns>A task containing the added transaction.</returns>
-    Task<Transaction> AddAsync(Transaction transaction, CancellationToken ct = default);
+    /// <returns>A task containing the ID of the new transaction.</returns>
+    Task<int> AddAsync(Transaction transaction, CancellationToken ct = default);
 
     /// <summary>
     /// Retrieves all stored transactions.

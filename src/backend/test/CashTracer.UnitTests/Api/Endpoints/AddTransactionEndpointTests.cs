@@ -64,7 +64,7 @@ public class AddTransactionEndpointTests : IDisposable
     {
         // Arrange
         var ct = TestContext.Current.CancellationToken;
-        var money = Money.Create(StubRequest.Currency, StubRequest.Amount).Value!;
+        var money = Money.Reconstruct(StubRequest.Currency, StubRequest.Amount);
         var dto = new TransactionDto(1, StubRequest.Type, StubRequest.Concept, StubRequest.Date, money);
         var expectedResult = Result<TransactionDto>.Success(dto);
         _serviceMock.Setup(s => s.AddAsync(StubRequest, ct)).ReturnsAsync(expectedResult);
