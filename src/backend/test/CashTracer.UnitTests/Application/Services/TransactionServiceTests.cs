@@ -1,7 +1,7 @@
+using CashTracer.Application.Errors;
 using CashTracer.Application.Interfaces;
 using CashTracer.Application.Requests;
 using CashTracer.Application.Services;
-using CashTracer.Application.Errors;
 using CashTracer.Domain.Common;
 using CashTracer.Domain.Entities;
 using CashTracer.Domain.Enums;
