@@ -1,5 +1,7 @@
+using CashTracer.Domain.Repositories;
 using CashTracer.Infrastructure.Persistence.Sqlite.Factories;
 using CashTracer.Infrastructure.Persistence.Sqlite.Migrations;
+using CashTracer.Infrastructure.Persistence.Sqlite.Repositories;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,10 +19,17 @@ public static class DependencyInjection
     /// <returns>The service collection.</returns>
     public static IServiceCollection AddSqlitePersistence(this IServiceCollection services)
     {
+        // Factory
         services.AddSingleton<SqlConnectionFactory>();
         services.AddSingleton<ISqlConnectionFactory>(sp => sp.GetRequiredService<SqlConnectionFactory>());
+
+        // Hosted services
         services.AddHostedService(sp => sp.GetRequiredService<SqlConnectionFactory>());
         services.AddHostedService<SqlMigrator>();
+
+        // Services
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
+
         return services;
     }
 }

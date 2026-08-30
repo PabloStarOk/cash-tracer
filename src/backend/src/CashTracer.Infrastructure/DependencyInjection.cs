@@ -1,6 +1,3 @@
-using CashTracer.Domain.Repositories;
-using CashTracer.Infrastructure.Data.Repositories;
-
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CashTracer.Infrastructure;
@@ -16,6 +13,6 @@ public static class DependencyInjection
     /// <param name="services">The service collection to add the services to.</param>
     public static void AddInfrastructure(this IServiceCollection services)
     {
-        services.AddScoped<ITransactionRepository, TransactionRepository>();
+        // Empty
     }
 }

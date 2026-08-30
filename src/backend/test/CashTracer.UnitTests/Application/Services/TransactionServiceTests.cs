@@ -91,12 +91,9 @@ public class TransactionServiceTests : IDisposable
         // Arrange
         var ct = TestContext.Current.CancellationToken;
         var transactionId = 1;
-        var money = Money.Reconstruct(request.Currency, request.Amount);
-        var transaction = Transaction
-            .Rehydrate(transactionId, request.Type, request.Concept, request.Date, money, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow);
         _repositoryMock
             .Setup(r => r.AddAsync(It.IsAny<Transaction>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(transaction);
+            .ReturnsAsync(transactionId);
 
         // Act
         var result = await _transactionService.AddAsync(request, ct);
