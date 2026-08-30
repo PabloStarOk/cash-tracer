@@ -6,7 +6,7 @@ namespace CashTracer.Domain.ValueObjects;
 /// <summary>
 /// Represents a monetary amount with a specific currency.
 /// </summary>
-public sealed record Money
+public readonly record struct Money
 {
     /// <summary>
     /// Gets the currency of the monetary amount, represented as a 3-letter ISO 4217 code.
