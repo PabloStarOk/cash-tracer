@@ -7,7 +7,7 @@ var builder = WebApplication.CreateSlimBuilder(args);
 builder.Services.AddSqlitePersistence();
 builder.Services.AddInfrastructure();
 builder.Services.AddApplication();
-builder.Services.AddApi();
+builder.Services.AddApi(builder.Configuration);
 var app = builder.Build();
 app.ConfigureApi();
 await app.RunAsync();
