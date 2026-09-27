@@ -6,8 +6,11 @@ import SearchBar from '@/components/SearchBar.vue'
 
 interface Props {
   allTransactions: Transaction[]
+  loadingAll: boolean
   expenses: Transaction[]
+  loadingExpenses: boolean
   incomes: Transaction[]
+  loadingIncomes: boolean
 }
 
 defineProps<Props>()
@@ -48,6 +51,8 @@ const tabs: { type: TabType; label: string; icon: string }[] = [
           <TabPanel value="all">
             <TransactionsTable
               :transactions="allTransactions"
+              :loading="loadingAll"
+              :error="false"
               @edit="(transaction) => $emit('edit', transaction)"
               @delete="(transaction) => $emit('delete', transaction)"
             />
@@ -55,6 +60,8 @@ const tabs: { type: TabType; label: string; icon: string }[] = [
           <TabPanel value="expenses">
             <TransactionsTable
               :transactions="expenses"
+              :loading="loadingExpenses"
+              :error="false"
               @edit="(transaction) => $emit('edit', transaction)"
               @delete="(transaction) => $emit('delete', transaction)"
             />
@@ -62,6 +69,8 @@ const tabs: { type: TabType; label: string; icon: string }[] = [
           <TabPanel value="incomes">
             <TransactionsTable
               :transactions="incomes"
+              :loading="loadingIncomes"
+              :error="false"
               @edit="(transaction) => $emit('edit', transaction)"
               @delete="(transaction) => $emit('delete', transaction)"
             />

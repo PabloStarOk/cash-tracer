@@ -8,6 +8,7 @@ export const useTransactionStore = defineStore('transactions', () => {
   const transactionsMap = ref<Map<number, Transaction>>(new Map())
   const search = ref<string>('')
   const date = ref<Date>(new Date())
+  const loading = ref<boolean>(false)
   const transactions = computed(() => {
     const allTransactions = [...transactionsMap.value.values()]
     const query = search.value.trim().toLowerCase()
@@ -22,7 +23,9 @@ export const useTransactionStore = defineStore('transactions', () => {
   const incomes = computed(() => transactions.value.filter((t) => t.type === 'income'))
 
   async function loadAll() {
+    loading.value = true
     const transactions = await api.getAll()
+    loading.value = false
     transactions.forEach((t) => {
       transactionsMap.value.set(t.id, t)
     })
@@ -71,6 +74,7 @@ export const useTransactionStore = defineStore('transactions', () => {
     transactions,
     expenses,
     incomes,
+    loading,
     add,
     update,
     remove,

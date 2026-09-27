@@ -4,6 +4,8 @@ import { Column, DataTable, Tag, Button } from 'primevue'
 
 interface Props {
   transactions: Transaction[]
+  loading: boolean
+  error: boolean
 }
 
 defineProps<Props>()
@@ -31,6 +33,7 @@ function capitalizeType(type: TransactionType): string {
 <template>
   <DataTable
     :value="transactions"
+    :loading="loading"
     tableClass="min-w-200"
     paginator
     :rows="10"
@@ -86,7 +89,7 @@ function capitalizeType(type: TransactionType): string {
         </div>
       </template>
     </Column>
-    <template #empty>
+    <template v-if="!loading" #empty>
       <div class="flex flex-col items-center justify-center p-12 text-neutral-500">
         <p>No transactions registered</p>
       </div>
