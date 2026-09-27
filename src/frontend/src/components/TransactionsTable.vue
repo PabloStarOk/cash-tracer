@@ -56,12 +56,12 @@ function capitalizeType(type: TransactionType): string {
     </Column>
     <Column header="Amount" class="min-w-fit w-[10%]">
       <template #body="slotProps">
-        {{ slotProps.data.price.amount }}
+        {{ slotProps.data.money.amount }}
       </template>
     </Column>
     <Column header="Currency" class="min-w-fit w-[7%]">
       <template #body="slotProps">
-        {{ slotProps.data.price.currency }}
+        {{ slotProps.data.money.currency }}
       </template>
     </Column>
     <Column header="Actions" class="min-w-fit w-[7%]">
