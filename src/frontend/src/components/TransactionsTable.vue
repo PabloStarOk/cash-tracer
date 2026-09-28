@@ -89,10 +89,17 @@ function capitalizeType(type: TransactionType): string {
         </div>
       </template>
     </Column>
-    <template v-if="!loading" #empty>
-      <div class="flex flex-col items-center justify-center p-12 text-neutral-500">
-        <p>No transactions registered</p>
-      </div>
+    <template #empty>
+      <template v-if="error">
+        <div class="flex flex-col gap-4 text-red-500 items-center">
+          <p>An error occurred, try again later.</p>
+        </div>
+      </template>
+      <template v-else>
+        <div class="flex flex-col items-center justify-center p-12 text-neutral-500">
+          <p>No transactions registered</p>
+        </div>
+      </template>
     </template>
   </DataTable>
 </template>

@@ -9,6 +9,7 @@ export const useTransactionStore = defineStore('transactions', () => {
   const search = ref<string>('')
   const date = ref<Date>(new Date())
   const loading = ref<boolean>(false)
+  const error = ref<boolean>(false)
   const transactions = computed(() => {
     const allTransactions = [...transactionsMap.value.values()]
     const query = search.value.trim().toLowerCase()
@@ -24,11 +25,17 @@ export const useTransactionStore = defineStore('transactions', () => {
 
   async function loadAll() {
     loading.value = true
-    const transactions = await api.getAll()
-    loading.value = false
-    transactions.forEach((t) => {
-      transactionsMap.value.set(t.id, t)
-    })
+    error.value = false
+    try {
+      const transactions = await api.getAll()
+      transactions.forEach((t) => {
+        transactionsMap.value.set(t.id, t)
+      })
+    } catch {
+      error.value = true
+    } finally {
+      loading.value = false
+    }
   }
 
   async function add(type: TransactionType, concept: string, date: Date, money: Money) {
@@ -75,6 +82,7 @@ export const useTransactionStore = defineStore('transactions', () => {
     expenses,
     incomes,
     loading,
+    error,
     add,
     update,
     remove,
