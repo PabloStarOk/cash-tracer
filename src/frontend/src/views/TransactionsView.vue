@@ -66,6 +66,7 @@ async function addTransaction(
   toast.add(loadingOptions)
   try {
     await store.add(transactionType, concept, date, price)
+    isDialogVisible.value = false
     toast.remove(loadingOptions)
     toast.add({
       severity: 'success',
@@ -97,6 +98,7 @@ async function updateTransaction(
   toast.add(loadingOptions)
   try {
     await store.update(id, transactionType, concept, date, price)
+    isDialogVisible.value = false
     toast.remove(loadingOptions)
     toast.add({
       severity: 'success',

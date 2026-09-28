@@ -51,7 +51,6 @@ function accept() {
       price,
     )
   } else emit('add', state.type.type, state.concept?.trim() as string, state.date, price)
-  close()
 }
 </script>
 
