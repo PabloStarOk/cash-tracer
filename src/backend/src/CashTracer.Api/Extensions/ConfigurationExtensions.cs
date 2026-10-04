@@ -21,7 +21,7 @@ public static class ConfigurationExtensions
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
-            app.MapScalarApiReference("docs");
+            app.MapScalarApiReference("docs", options => options.Title = "Cash Tracer API");
         }
 
         TransactionEndpointGroup.MapGroup(app);
