@@ -147,6 +147,7 @@ function accept() {
                 showButtons
                 buttonLayout="horizontal"
                 mode="currency"
+                :min="0"
                 :currency="state.currency.code"
                 :invalid="!errors.amount.valid"
                 inputClass="w-full"
