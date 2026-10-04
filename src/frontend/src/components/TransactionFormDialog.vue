@@ -101,16 +101,25 @@ function accept() {
       </div>
 
       <div class="flex flex-wrap gap-2 overflow-hidden">
-        <FloatLabel variant="in" class="flex-1 min-w-fit">
-          <DatePicker
-            inputId="transactionDate"
-            v-model="state.date"
-            showIcon
-            iconDisplay="input"
-            class="w-full"
-          />
-          <label for="transactionDate">Date</label>
-        </FloatLabel>
+        <div class="flex flex-col">
+          <FloatLabel variant="in" class="flex-1 min-w-fit">
+            <DatePicker
+              inputId="transactionDate"
+              v-model="state.date"
+              showIcon
+              iconDisplay="input"
+              class="w-full"
+              placeholder="dd/mm/yyyy"
+              show-button-bar
+            />
+            <label for="transactionDate">Date</label>
+          </FloatLabel>
+          <div class="min-h-6">
+            <Message v-if="errors.date.msg" severity="error" variant="simple" size="small">
+              {{ errors.date.msg }}
+            </Message>
+          </div>
+        </div>
 
         <div class="flex flex-col md:flex-row flex-1 gap-2 max-w-full">
           <FloatLabel variant="in" class="w-full md:max-w-fit">

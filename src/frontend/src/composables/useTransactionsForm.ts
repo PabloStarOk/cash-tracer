@@ -20,6 +20,7 @@ interface TransactionsFormState {
 interface TransactionsFormErrors {
   concept: { valid: boolean; msg?: string }
   amount: { valid: boolean; msg?: string }
+  date: { valid: boolean; msg?: string }
 }
 
 export function useTransactionForm(
@@ -43,9 +44,10 @@ export function useTransactionForm(
   const errors = reactive<TransactionsFormErrors>({
     concept: { valid: true },
     amount: { valid: true },
+    date: { valid: true },
   })
 
-  const valid = computed(() => errors.concept.valid && errors.amount.valid)
+  const valid = computed(() => errors.concept.valid && errors.amount.valid && errors.date.valid)
   const plainDate = computed(() => legacyToPlainDate(state.date))
   let isResetting = false
 
@@ -63,6 +65,15 @@ export function useTransactionForm(
     () => {
       if (!isResetting) {
         validateAmount()
+      }
+    },
+  )
+
+  watch(
+    () => state.date,
+    () => {
+      if (!isResetting) {
+        validateDate()
       }
     },
   )
@@ -92,9 +103,20 @@ export function useTransactionForm(
     errors.amount.msg = `Must be greater than 0`
   }
 
+  function validateDate() {
+    errors.date.valid = !!state.date
+    if (errors.date.valid) {
+      errors.date.msg = undefined
+      return
+    }
+
+    errors.date.msg = `Specify a date`
+  }
+
   function validate() {
     validateConcept()
     validateAmount()
+    validateDate()
   }
 
   function setInitialState(transaction: Transaction) {
@@ -118,6 +140,7 @@ export function useTransactionForm(
     await nextTick()
     errors.concept = { valid: true }
     errors.amount = { valid: true }
+    errors.date = { valid: true }
     isResetting = false
   }
 
