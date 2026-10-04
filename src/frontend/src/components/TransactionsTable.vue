@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Transaction, TransactionType } from '@/types/transactions'
+import type { Temporal } from '@js-temporal/polyfill'
 import { Column, DataTable, Tag, Button } from 'primevue'
 
 interface Props {
@@ -15,11 +16,13 @@ defineEmits<{
   delete: [transaction: Transaction]
 }>()
 
-const dateFormatter = new Intl.DateTimeFormat(navigator.language, {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-})
+function formatDate(date: Temporal.PlainDate) {
+  return date.toLocaleString(navigator.language, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+}
 
 function capitalizeType(type: TransactionType): string {
   switch (type) {
@@ -55,7 +58,7 @@ function capitalizeType(type: TransactionType): string {
     </Column>
     <Column header="Date" class="min-w-fit w-[15%]">
       <template #body="slotProps">
-        {{ dateFormatter.format(slotProps.data.date) }}
+        {{ formatDate(slotProps.data.date) }}
       </template>
     </Column>
     <Column header="Amount" class="min-w-fit w-[10%]">

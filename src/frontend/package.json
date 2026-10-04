@@ -15,6 +15,7 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@js-temporal/polyfill": "^0.5.1",
     "@primeuix/themes": "^2.0.3",
     "axios": "^1.20.0",
     "pinia": "^3.0.4",

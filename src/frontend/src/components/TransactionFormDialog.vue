@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useTransactionForm } from '@/composables/useTransactionsForm'
 import type { Currency, Money, Transaction, TransactionType } from '@/types/transactions'
+import type { Temporal } from '@js-temporal/polyfill'
 import {
   Button,
   DatePicker,
@@ -21,11 +22,17 @@ interface Props {
 const props = defineProps<Props>()
 const visible = defineModel<boolean>('visible')
 const emit = defineEmits<{
-  add: [transactionType: TransactionType, concept: string, date: Date, price: Money]
-  update: [id: number, transactionType: TransactionType, concept: string, date: Date, price: Money]
+  add: [transactionType: TransactionType, concept: string, date: Temporal.PlainDate, price: Money]
+  update: [
+    id: number,
+    transactionType: TransactionType,
+    concept: string,
+    date: Temporal.PlainDate,
+    price: Money,
+  ]
 }>()
 const editingTransaction = defineModel<Transaction | undefined>('editingTransaction')
-const { typeOptions, state, errors, valid, reset, validate } = useTransactionForm(
+const { typeOptions, state, errors, valid, plainDate, reset, validate } = useTransactionForm(
   props.currencies,
   editingTransaction,
 )
@@ -48,10 +55,10 @@ function accept() {
       editingTransaction.value?.id,
       state.type.type,
       state.concept?.trim() as string,
-      state.date,
+      plainDate.value,
       price,
     )
-  } else emit('add', state.type.type, state.concept?.trim() as string, state.date, price)
+  } else emit('add', state.type.type, state.concept?.trim() as string, plainDate.value, price)
 }
 </script>
 

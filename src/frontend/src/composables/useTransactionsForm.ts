@@ -1,5 +1,7 @@
 import { CONCEPT_MAX_LENGTH } from '@/data/transactions'
 import type { Currency, Transaction, TransactionType } from '@/types/transactions'
+import { legacyToPlainDate, plainDateToLegacy } from '@/utils/dateUtils'
+import { Temporal } from '@js-temporal/polyfill'
 import { computed, nextTick, reactive, watch, watchEffect, type Ref } from 'vue'
 
 interface TypeOption {
@@ -33,7 +35,7 @@ export function useTransactionForm(
   const state = reactive<TransactionsFormState>({
     type: typeOptions[0] as TypeOption,
     concept: '',
-    date: new Date(),
+    date: plainDateToLegacy(Temporal.Now.plainDateISO()),
     currency: defaultCurrency,
     amount: 0,
   })
@@ -44,6 +46,7 @@ export function useTransactionForm(
   })
 
   const valid = computed(() => errors.concept.valid && errors.amount.valid)
+  const plainDate = computed(() => legacyToPlainDate(state.date))
   let isResetting = false
 
   watch(
@@ -99,7 +102,7 @@ export function useTransactionForm(
     const matchedCurrencies = currencies.filter((c) => c.code === transaction.money.currency)
     state.type = (types.length ? types[0] : typeOptions[0]) as TypeOption
     state.concept = transaction.concept
-    state.date = transaction.date
+    state.date = plainDateToLegacy(transaction.date)
     state.currency = (matchedCurrencies.length ? matchedCurrencies[0] : defaultCurrency) as Currency
     state.amount = transaction.money.amount
   }
@@ -109,7 +112,7 @@ export function useTransactionForm(
     editingTransaction.value = undefined
     state.type = typeOptions[0] as TypeOption
     state.concept = ''
-    state.date = new Date()
+    state.date = plainDateToLegacy(Temporal.Now.plainDateISO())
     state.currency = defaultCurrency
     state.amount = 0
     await nextTick()
@@ -123,6 +126,7 @@ export function useTransactionForm(
     state,
     errors,
     valid,
+    plainDate,
     reset,
     validate,
   }

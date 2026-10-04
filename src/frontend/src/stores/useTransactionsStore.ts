@@ -1,5 +1,6 @@
 import { useTransactionsApi } from '@/api/transactionsApi'
 import type { Money, Transaction, TransactionType } from '@/types/transactions'
+import { Temporal } from '@js-temporal/polyfill'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
@@ -7,7 +8,7 @@ export const useTransactionStore = defineStore('transactions', () => {
   const api = useTransactionsApi()
   const transactionsMap = ref<Map<number, Transaction>>(new Map())
   const search = ref<string>('')
-  const date = ref<Date>(new Date())
+  const filterDate = ref<Temporal.PlainYearMonth>(Temporal.Now.plainDateISO().toPlainYearMonth())
   const loading = ref<boolean>(false)
   const error = ref<boolean>(false)
   const deletingTransactionIds = ref<Set<number>>(new Set())
@@ -16,8 +17,8 @@ export const useTransactionStore = defineStore('transactions', () => {
     const query = search.value.trim().toLowerCase()
     return allTransactions.filter(
       (t) =>
-        t.date.getFullYear() === date.value.getFullYear() &&
-        t.date.getMonth() === date.value.getMonth() &&
+        t.date.year === filterDate.value.year &&
+        t.date.month === filterDate.value.month &&
         t.concept.toLowerCase().includes(query),
     )
   })
@@ -39,7 +40,12 @@ export const useTransactionStore = defineStore('transactions', () => {
     }
   }
 
-  async function add(type: TransactionType, concept: string, date: Date, money: Money) {
+  async function add(
+    type: TransactionType,
+    concept: string,
+    date: Temporal.PlainDate,
+    money: Money,
+  ) {
     const transaction: Transaction = {
       id: 0,
       concept,
@@ -55,7 +61,7 @@ export const useTransactionStore = defineStore('transactions', () => {
     id: number,
     type: TransactionType,
     concept: string,
-    date: Date,
+    date: Temporal.PlainDate,
     money: Money,
   ) {
     const transaction = transactionsMap.value.get(id)
@@ -83,7 +89,7 @@ export const useTransactionStore = defineStore('transactions', () => {
 
   return {
     search,
-    date,
+    filterDate,
     transactions,
     expenses,
     incomes,

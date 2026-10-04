@@ -11,6 +11,7 @@ import ConfirmDialog from 'primevue/confirmdialog'
 import Toast, { type ToastMessageOptions } from 'primevue/toast'
 import { AxiosError } from 'axios'
 import { API_ERRORS_DICTIONARY, ApiError, AXIOS_ERRORS_DICTIONARY } from '@/errors/errors'
+import type { Temporal } from '@js-temporal/polyfill'
 
 const toastDuration = 4000
 const store = useTransactionStore()
@@ -57,7 +58,7 @@ function buildLoadingToastOptions(summary: string, detail: string): ToastMessage
 async function addTransaction(
   transactionType: TransactionType,
   concept: string,
-  date: Date,
+  date: Temporal.PlainDate,
   price: Money,
 ) {
   isSubmitting.value = true
@@ -92,7 +93,7 @@ async function updateTransaction(
   id: number,
   transactionType: TransactionType,
   concept: string,
-  date: Date,
+  date: Temporal.PlainDate,
   price: Money,
 ) {
   isSubmitting.value = true
@@ -176,7 +177,6 @@ onMounted(() => {
     <div class="flex flex-col flex-1 gap-4 max-w-full">
       <TransactionsList
         v-model:search="store.search"
-        v-model:date="store.date"
         :allTransactions="store.transactions"
         :expenses="store.expenses"
         :incomes="store.incomes"
@@ -191,7 +191,11 @@ onMounted(() => {
         @edit="openEditDialog"
         @delete="confirmDeleteTransaction"
       />
-      <TransactionsBottomBar v-model:date="store.date" @add="openDialog" class="sticky bottom-0" />
+      <TransactionsBottomBar
+        v-model:date="store.filterDate"
+        @add="openDialog"
+        class="sticky bottom-0"
+      />
     </div>
   </div>
 

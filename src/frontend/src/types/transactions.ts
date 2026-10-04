@@ -1,3 +1,5 @@
+import type { Temporal } from '@js-temporal/polyfill'
+
 export type TransactionType = 'expense' | 'income'
 
 export interface Currency {
@@ -14,6 +16,6 @@ export interface Transaction {
   id: number
   type: TransactionType
   concept: string
-  date: Date
+  date: Temporal.PlainDate
   money: Money
 }

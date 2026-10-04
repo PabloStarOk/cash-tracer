@@ -1,5 +1,6 @@
 import { ApiError } from '@/errors/errors'
 import { type Money, type Transaction, type TransactionType } from '@/types/transactions'
+import { Temporal } from '@js-temporal/polyfill'
 import axios, { AxiosError } from 'axios'
 
 interface ProblemDetails {
@@ -14,7 +15,7 @@ interface ProblemDetails {
 interface TransactionRequestDto {
   type: TransactionType
   concept: string
-  date: string
+  date: Temporal.PlainDate
   currency: string
   amount: number
 }
@@ -52,23 +53,9 @@ export function useTransactionsApi() {
     return apiErrors
   }
 
-  function toPlainDateString(date: Date): string {
-    const year = String(date.getFullYear()).padStart(4, '0')
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-  }
-
-  function fromPlainDateString(date: string): Date {
-    const [year, month, day] = date.split('-').map(Number)
-    return new Date(year as number, (month as number) - 1, day)
-  }
-
   function convertToDto(transaction: Transaction): TransactionRequestDto {
     return {
-      type: transaction.type,
-      concept: transaction.concept,
-      date: toPlainDateString(transaction.date),
+      ...transaction,
       currency: transaction.money.currency,
       amount: transaction.money.amount,
     }
@@ -76,11 +63,8 @@ export function useTransactionsApi() {
 
   function convertFromDto(dto: TransactionResponseDto): Transaction {
     return {
-      id: dto.id,
-      type: dto.type,
-      concept: dto.concept,
-      date: fromPlainDateString(dto.date),
-      money: dto.money,
+      ...dto,
+      date: Temporal.PlainDate.from(dto.date),
     }
   }
 

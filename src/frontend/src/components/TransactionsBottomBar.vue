@@ -1,11 +1,22 @@
 <script setup lang="ts">
+import { Temporal } from '@js-temporal/polyfill'
 import { Button, Card, DatePicker, FloatLabel } from 'primevue'
+import { computed } from 'vue'
 
 defineEmits<{
   add: []
 }>()
 
-const date = defineModel<Date>('date', { required: true })
+const date = defineModel<Temporal.PlainYearMonth>('date', { required: true })
+const legacyDate = computed(() => {
+  return new Date(date.value.toPlainDate({ day: 1 }).toLocaleString())
+})
+
+function updateDate(input: unknown) {
+  if (!(input instanceof Date)) return
+  const value = new Temporal.PlainYearMonth(input.getFullYear(), input.getMonth() + 1)
+  date.value = value
+}
 </script>
 
 <template>
@@ -14,7 +25,7 @@ const date = defineModel<Date>('date', { required: true })
       <div class="flex gap-4 justify-between">
         <FloatLabel variant="in" class="max-[375px]:max-w-40">
           <DatePicker
-            v-model="date"
+            :model-value="legacyDate"
             inputId="transactionsDate"
             dateFormat="MM yy"
             view="month"
@@ -22,6 +33,7 @@ const date = defineModel<Date>('date', { required: true })
             showIcon
             iconDisplay="input"
             showButtonBar
+            @update:model-value="updateDate"
           >
             <template #buttonbar="{ todayCallback }">
               <div class="flex items-center justify-start gap-2">
