@@ -15,6 +15,7 @@ import { API_ERRORS_DICTIONARY, ApiError, AXIOS_ERRORS_DICTIONARY } from '@/erro
 const toastDuration = 4000
 const store = useTransactionStore()
 const isDialogVisible = ref(false)
+const isSubmitting = ref(false)
 const editingTransaction = ref<Transaction | undefined>()
 const confirm = useConfirm()
 const toast = useToast()
@@ -59,6 +60,7 @@ async function addTransaction(
   date: Date,
   price: Money,
 ) {
+  isSubmitting.value = true
   const loadingOptions = buildLoadingToastOptions(
     'Adding transaction',
     `Adding transaction '${concept}'`,
@@ -81,6 +83,8 @@ async function addTransaction(
       'Transaction could not be added',
       `Transaction '${concept}' could not be added due to an unexpected error, try again later.`,
     )
+  } finally {
+    isSubmitting.value = false
   }
 }
 
@@ -91,6 +95,7 @@ async function updateTransaction(
   date: Date,
   price: Money,
 ) {
+  isSubmitting.value = true
   const loadingOptions = buildLoadingToastOptions(
     'Updating transaction',
     `Updating transaction '${concept}'`,
@@ -113,6 +118,8 @@ async function updateTransaction(
       'Transaction could not be updated',
       `Transaction '${concept}' could not be updated due to an unexpected error, try again later.`,
     )
+  } finally {
+    isSubmitting.value = false
   }
 }
 
@@ -179,6 +186,7 @@ onMounted(() => {
         :errorLoadingAll="store.error"
         :errorLoadingExpenses="store.error"
         :errorLoadingIncomes="store.error"
+        :deletingTransactionIds="store.deletingTransactionIds"
         class="flex-1"
         @edit="openEditDialog"
         @delete="confirmDeleteTransaction"
@@ -191,6 +199,7 @@ onMounted(() => {
     v-model:visible="isDialogVisible"
     v-model:editingTransaction="editingTransaction"
     :currencies="CURRENCIES"
+    :isSubmitting="isSubmitting"
     @add="addTransaction"
     @update="updateTransaction"
   />

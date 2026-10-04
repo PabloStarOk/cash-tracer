@@ -15,6 +15,7 @@ import { computed } from 'vue'
 
 interface Props {
   currencies: Currency[]
+  isSubmitting: boolean
 }
 
 const props = defineProps<Props>()
@@ -163,8 +164,8 @@ function accept() {
       </div>
     </div>
     <template #footer>
-      <Button label="Cancel" severity="secondary" @click="close" />
-      <Button :label="actionLabel" @click="accept" />
+      <Button label="Cancel" severity="secondary" @click="close" :disabled="isSubmitting" />
+      <Button :label="actionLabel" @click="accept" :loading="isSubmitting" />
     </template>
   </Dialog>
 </template>

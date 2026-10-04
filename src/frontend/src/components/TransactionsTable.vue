@@ -6,6 +6,7 @@ interface Props {
   transactions: Transaction[]
   loading: boolean
   error: boolean
+  deletingTransactionIds: Set<number>
 }
 
 defineProps<Props>()
@@ -76,6 +77,7 @@ function capitalizeType(type: TransactionType): string {
             variant="outlined"
             size="small"
             aria-label="Edit transaction"
+            :loading="deletingTransactionIds.has(slotProps.data.id)"
             @click="$emit('edit', slotProps.data)"
           />
           <Button
@@ -84,6 +86,7 @@ function capitalizeType(type: TransactionType): string {
             variant="outlined"
             size="small"
             aria-label="Delete transaction"
+            :loading="deletingTransactionIds.has(slotProps.data.id)"
             @click="$emit('delete', slotProps.data)"
           />
         </div>

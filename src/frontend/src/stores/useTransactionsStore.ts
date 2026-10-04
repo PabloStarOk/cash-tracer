@@ -10,6 +10,7 @@ export const useTransactionStore = defineStore('transactions', () => {
   const date = ref<Date>(new Date())
   const loading = ref<boolean>(false)
   const error = ref<boolean>(false)
+  const deletingTransactionIds = ref<Set<number>>(new Set())
   const transactions = computed(() => {
     const allTransactions = [...transactionsMap.value.values()]
     const query = search.value.trim().toLowerCase()
@@ -71,8 +72,13 @@ export const useTransactionStore = defineStore('transactions', () => {
   }
 
   async function remove(id: number) {
-    await api.remove(id)
-    transactionsMap.value.delete(id)
+    deletingTransactionIds.value.add(id)
+    try {
+      await api.remove(id)
+      transactionsMap.value.delete(id)
+    } finally {
+      deletingTransactionIds.value.delete(id)
+    }
   }
 
   return {
@@ -82,6 +88,7 @@ export const useTransactionStore = defineStore('transactions', () => {
     expenses,
     incomes,
     loading,
+    deletingTransactionIds,
     error,
     add,
     update,
