@@ -16,8 +16,11 @@ defineEmits<{
   delete: [transaction: Transaction]
 }>()
 
+const locale = navigator.language
+const numberFormatter = new Intl.NumberFormat(locale)
+
 function formatDate(date: Temporal.PlainDate) {
-  return date.toLocaleString(navigator.language, {
+  return date.toLocaleString(locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -63,7 +66,7 @@ function capitalizeType(type: TransactionType): string {
     </Column>
     <Column header="Amount" class="min-w-fit w-[10%]">
       <template #body="slotProps">
-        {{ slotProps.data.money.amount }}
+        {{ numberFormatter.format(slotProps.data.money.amount) }}
       </template>
     </Column>
     <Column header="Currency" class="min-w-fit w-[7%]">
