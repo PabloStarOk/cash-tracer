@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TransactionsBottomBar from '@/components/TransactionsBottomBar.vue'
 import TransactionsFormDialog from '@/components/TransactionFormDialog.vue'
-import TransactionsList from '@/components/TransactionsList.vue'
+import TransactionsTabs from '@/components/TransactionsTabs.vue'
 import { CURRENCIES } from '@/data/transactions'
 import { useTransactionStore } from '@/stores/useTransactionsStore'
 import { type Money, type Transaction, type TransactionType } from '@/types/transactions'
@@ -175,7 +175,7 @@ onMounted(() => {
 <template>
   <div class="flex gap-4 h-full">
     <div class="flex flex-col flex-1 gap-4 max-w-full">
-      <TransactionsList
+      <TransactionsTabs
         v-model:search="store.search"
         :allTransactions="store.transactions"
         :expenses="store.expenses"
