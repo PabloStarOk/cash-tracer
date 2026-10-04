@@ -96,12 +96,12 @@ export function useTransactionForm(
 
   function setInitialState(transaction: Transaction) {
     const types = typeOptions.filter((t) => t.type === transaction.type)
-    const matchedCurrencies = currencies.filter((c) => c.code === transaction.price.currency)
+    const matchedCurrencies = currencies.filter((c) => c.code === transaction.money.currency)
     state.type = (types.length ? types[0] : typeOptions[0]) as TypeOption
     state.concept = transaction.concept
     state.date = transaction.date
     state.currency = (matchedCurrencies.length ? matchedCurrencies[0] : defaultCurrency) as Currency
-    state.amount = transaction.price.amount
+    state.amount = transaction.money.amount
   }
 
   async function reset() {

@@ -4,6 +4,9 @@ import { Column, DataTable, Tag, Button } from 'primevue'
 
 interface Props {
   transactions: Transaction[]
+  loading: boolean
+  error: boolean
+  deletingTransactionIds: Set<number>
 }
 
 defineProps<Props>()
@@ -31,6 +34,7 @@ function capitalizeType(type: TransactionType): string {
 <template>
   <DataTable
     :value="transactions"
+    :loading="loading"
     tableClass="min-w-200"
     paginator
     :rows="10"
@@ -56,12 +60,12 @@ function capitalizeType(type: TransactionType): string {
     </Column>
     <Column header="Amount" class="min-w-fit w-[10%]">
       <template #body="slotProps">
-        {{ slotProps.data.price.amount }}
+        {{ slotProps.data.money.amount }}
       </template>
     </Column>
     <Column header="Currency" class="min-w-fit w-[7%]">
       <template #body="slotProps">
-        {{ slotProps.data.price.currency }}
+        {{ slotProps.data.money.currency }}
       </template>
     </Column>
     <Column header="Actions" class="min-w-fit w-[7%]">
@@ -73,6 +77,7 @@ function capitalizeType(type: TransactionType): string {
             variant="outlined"
             size="small"
             aria-label="Edit transaction"
+            :loading="deletingTransactionIds.has(slotProps.data.id)"
             @click="$emit('edit', slotProps.data)"
           />
           <Button
@@ -81,15 +86,23 @@ function capitalizeType(type: TransactionType): string {
             variant="outlined"
             size="small"
             aria-label="Delete transaction"
+            :loading="deletingTransactionIds.has(slotProps.data.id)"
             @click="$emit('delete', slotProps.data)"
           />
         </div>
       </template>
     </Column>
     <template #empty>
-      <div class="flex flex-col items-center justify-center p-12 text-neutral-500">
-        <p>No transactions registered</p>
-      </div>
+      <template v-if="error">
+        <div class="flex flex-col gap-4 text-red-500 items-center">
+          <p>An error occurred, try again later.</p>
+        </div>
+      </template>
+      <template v-else>
+        <div class="flex flex-col items-center justify-center p-12 text-neutral-500">
+          <p>No transactions registered</p>
+        </div>
+      </template>
     </template>
   </DataTable>
 </template>

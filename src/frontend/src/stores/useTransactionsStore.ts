@@ -1,12 +1,16 @@
-import { TRANSACTIONS } from '@/data/transactions'
-import type { Price, Transaction, TransactionType } from '@/types/transactions'
+import { useTransactionsApi } from '@/api/transactionsApi'
+import type { Money, Transaction, TransactionType } from '@/types/transactions'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
 export const useTransactionStore = defineStore('transactions', () => {
-  const transactionsMap = ref<Map<number, Transaction>>(new Map(TRANSACTIONS.map((t) => [t.id, t])))
+  const api = useTransactionsApi()
+  const transactionsMap = ref<Map<number, Transaction>>(new Map())
   const search = ref<string>('')
   const date = ref<Date>(new Date())
+  const loading = ref<boolean>(false)
+  const error = ref<boolean>(false)
+  const deletingTransactionIds = ref<Set<number>>(new Set())
   const transactions = computed(() => {
     const allTransactions = [...transactionsMap.value.values()]
     const query = search.value.trim().toLowerCase()
@@ -20,37 +24,61 @@ export const useTransactionStore = defineStore('transactions', () => {
   const expenses = computed(() => transactions.value.filter((t) => t.type === 'expense'))
   const incomes = computed(() => transactions.value.filter((t) => t.type === 'income'))
 
-  const nextId = ref(1)
+  async function loadAll() {
+    loading.value = true
+    error.value = false
+    try {
+      const transactions = await api.getAll()
+      transactions.forEach((t) => {
+        transactionsMap.value.set(t.id, t)
+      })
+    } catch {
+      error.value = true
+    } finally {
+      loading.value = false
+    }
+  }
 
-  function add(type: TransactionType, concept: string, date: Date, price: Price) {
+  async function add(type: TransactionType, concept: string, date: Date, money: Money) {
     const transaction: Transaction = {
-      id: nextId.value,
+      id: 0,
       concept,
       type,
       date,
-      price,
+      money,
     }
-    transactionsMap.value.set(transaction.id, transaction)
-    nextId.value++
+    const newTransaction = await api.add(transaction)
+    transactionsMap.value.set(newTransaction.id, newTransaction)
   }
 
-  function update(id: number, type: TransactionType, concept: string, date: Date, price: Price) {
+  async function update(
+    id: number,
+    type: TransactionType,
+    concept: string,
+    date: Date,
+    money: Money,
+  ) {
     const transaction = transactionsMap.value.get(id)
     if (!transaction) return
-    const updatedTransaction: Transaction = {
+    let updatedTransaction: Transaction = {
       id,
       concept,
       type,
       date,
-      price,
+      money,
     }
-    transactionsMap.value.set(transaction.id, updatedTransaction)
+    updatedTransaction = await api.update(updatedTransaction)
+    transactionsMap.value.set(updatedTransaction.id, updatedTransaction)
   }
 
-  function remove(id: number) {
-    const transaction = transactionsMap.value.get(id)
-    if (!transaction) return
-    transactionsMap.value.delete(id)
+  async function remove(id: number) {
+    deletingTransactionIds.value.add(id)
+    try {
+      await api.remove(id)
+      transactionsMap.value.delete(id)
+    } finally {
+      deletingTransactionIds.value.delete(id)
+    }
   }
 
   return {
@@ -59,8 +87,12 @@ export const useTransactionStore = defineStore('transactions', () => {
     transactions,
     expenses,
     incomes,
+    loading,
+    deletingTransactionIds,
+    error,
     add,
     update,
     remove,
+    loadAll,
   }
 })

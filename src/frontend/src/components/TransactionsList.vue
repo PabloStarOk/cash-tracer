@@ -6,8 +6,15 @@ import SearchBar from '@/components/SearchBar.vue'
 
 interface Props {
   allTransactions: Transaction[]
+  loadingAll: boolean
+  errorLoadingAll: boolean
   expenses: Transaction[]
+  loadingExpenses: boolean
+  errorLoadingExpenses: boolean
   incomes: Transaction[]
+  loadingIncomes: boolean
+  errorLoadingIncomes: boolean
+  deletingTransactionIds: Set<number>
 }
 
 defineProps<Props>()
@@ -48,6 +55,9 @@ const tabs: { type: TabType; label: string; icon: string }[] = [
           <TabPanel value="all">
             <TransactionsTable
               :transactions="allTransactions"
+              :loading="loadingAll"
+              :error="errorLoadingAll"
+              :deletingTransactionIds="deletingTransactionIds"
               @edit="(transaction) => $emit('edit', transaction)"
               @delete="(transaction) => $emit('delete', transaction)"
             />
@@ -55,6 +65,9 @@ const tabs: { type: TabType; label: string; icon: string }[] = [
           <TabPanel value="expenses">
             <TransactionsTable
               :transactions="expenses"
+              :loading="loadingExpenses"
+              :error="errorLoadingExpenses"
+              :deletingTransactionIds="deletingTransactionIds"
               @edit="(transaction) => $emit('edit', transaction)"
               @delete="(transaction) => $emit('delete', transaction)"
             />
@@ -62,6 +75,9 @@ const tabs: { type: TabType; label: string; icon: string }[] = [
           <TabPanel value="incomes">
             <TransactionsTable
               :transactions="incomes"
+              :loading="loadingIncomes"
+              :error="errorLoadingIncomes"
+              :deletingTransactionIds="deletingTransactionIds"
               @edit="(transaction) => $emit('edit', transaction)"
               @delete="(transaction) => $emit('delete', transaction)"
             />

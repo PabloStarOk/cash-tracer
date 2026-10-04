@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTransactionForm } from '@/composables/useTransactionsForm'
-import type { Currency, Price, Transaction, TransactionType } from '@/types/transactions'
+import type { Currency, Money, Transaction, TransactionType } from '@/types/transactions'
 import {
   Button,
   DatePicker,
@@ -15,13 +15,14 @@ import { computed } from 'vue'
 
 interface Props {
   currencies: Currency[]
+  isSubmitting: boolean
 }
 
 const props = defineProps<Props>()
 const visible = defineModel<boolean>('visible')
 const emit = defineEmits<{
-  add: [transactionType: TransactionType, concept: string, date: Date, price: Price]
-  update: [id: number, transactionType: TransactionType, concept: string, date: Date, price: Price]
+  add: [transactionType: TransactionType, concept: string, date: Date, price: Money]
+  update: [id: number, transactionType: TransactionType, concept: string, date: Date, price: Money]
 }>()
 const editingTransaction = defineModel<Transaction | undefined>('editingTransaction')
 const { typeOptions, state, errors, valid, reset, validate } = useTransactionForm(
@@ -40,7 +41,7 @@ function close() {
 function accept() {
   validate()
   if (!valid.value) return
-  const price: Price = { currency: state.currency.code, amount: state.amount as number }
+  const price: Money = { currency: state.currency.code, amount: state.amount as number }
   if (editingTransaction.value) {
     emit(
       'update',
@@ -51,7 +52,6 @@ function accept() {
       price,
     )
   } else emit('add', state.type.type, state.concept?.trim() as string, state.date, price)
-  close()
 }
 </script>
 
@@ -164,8 +164,8 @@ function accept() {
       </div>
     </div>
     <template #footer>
-      <Button label="Cancel" severity="secondary" @click="close" />
-      <Button :label="actionLabel" @click="accept" />
+      <Button label="Cancel" severity="secondary" @click="close" :disabled="isSubmitting" />
+      <Button :label="actionLabel" @click="accept" :loading="isSubmitting" />
     </template>
   </Dialog>
 </template>

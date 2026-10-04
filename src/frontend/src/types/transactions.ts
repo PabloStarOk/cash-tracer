@@ -5,7 +5,7 @@ export interface Currency {
   region: string
 }
 
-export interface Price {
+export interface Money {
   currency: string
   amount: number
 }
@@ -15,5 +15,5 @@ export interface Transaction {
   type: TransactionType
   concept: string
   date: Date
-  price: Price
+  money: Money
 }

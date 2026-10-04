@@ -4,15 +4,18 @@ import TransactionsFormDialog from '@/components/TransactionFormDialog.vue'
 import TransactionsList from '@/components/TransactionsList.vue'
 import { CURRENCIES } from '@/data/transactions'
 import { useTransactionStore } from '@/stores/useTransactionsStore'
-import type { Price, Transaction, TransactionType } from '@/types/transactions'
-import { ref } from 'vue'
-import { useConfirm, useToast } from 'primevue'
+import { type Money, type Transaction, type TransactionType } from '@/types/transactions'
+import { onMounted, ref } from 'vue'
+import { ProgressSpinner, useConfirm, useToast } from 'primevue'
 import ConfirmDialog from 'primevue/confirmdialog'
-import Toast from 'primevue/toast'
+import Toast, { type ToastMessageOptions } from 'primevue/toast'
+import { AxiosError } from 'axios'
+import { API_ERRORS_DICTIONARY, ApiError, AXIOS_ERRORS_DICTIONARY } from '@/errors/errors'
 
 const toastDuration = 4000
 const store = useTransactionStore()
 const isDialogVisible = ref(false)
+const isSubmitting = ref(false)
 const editingTransaction = ref<Transaction | undefined>()
 const confirm = useConfirm()
 const toast = useToast()
@@ -26,56 +29,126 @@ function openEditDialog(transaction: Transaction) {
   openDialog()
 }
 
-function addTransaction(
+function showErrorToast(error: unknown, summary: string, defaultDetail: string) {
+  let detail: string | undefined
+  if (error instanceof ApiError) {
+    detail = API_ERRORS_DICTIONARY[error.code]
+  } else if (error instanceof AxiosError && error.code) {
+    detail = AXIOS_ERRORS_DICTIONARY[error.code]
+  }
+
+  toast.add({
+    severity: 'error',
+    summary: summary,
+    detail: detail ?? defaultDetail,
+    life: toastDuration,
+  })
+}
+
+function buildLoadingToastOptions(summary: string, detail: string): ToastMessageOptions {
+  return {
+    severity: 'secondary',
+    summary,
+    detail,
+    group: 'loading',
+  }
+}
+
+async function addTransaction(
   transactionType: TransactionType,
   concept: string,
   date: Date,
-  price: Price,
+  price: Money,
 ) {
+  isSubmitting.value = true
+  const loadingOptions = buildLoadingToastOptions(
+    'Adding transaction',
+    `Adding transaction '${concept}'`,
+  )
+  toast.add(loadingOptions)
   try {
-    store.add(transactionType, concept, date, price)
+    await store.add(transactionType, concept, date, price)
+    isDialogVisible.value = false
+    toast.remove(loadingOptions)
     toast.add({
       severity: 'success',
       summary: 'Transaction added successfully',
       detail: `Transaction '${concept}' added.`,
       life: toastDuration,
     })
-  } catch {
-    toast.add({
-      severity: 'error',
-      summary: 'Transaction could not be added',
-      detail: `Transaction '${concept}' could not be added due to an unexpected error, try again later.`,
-      life: toastDuration,
-    })
+  } catch (error: unknown) {
+    toast.remove(loadingOptions)
+    showErrorToast(
+      error,
+      'Transaction could not be added',
+      `Transaction '${concept}' could not be added due to an unexpected error, try again later.`,
+    )
+  } finally {
+    isSubmitting.value = false
   }
 }
 
-function updateTransaction(
+async function updateTransaction(
   id: number,
   transactionType: TransactionType,
   concept: string,
   date: Date,
-  price: Price,
+  price: Money,
 ) {
+  isSubmitting.value = true
+  const loadingOptions = buildLoadingToastOptions(
+    'Updating transaction',
+    `Updating transaction '${concept}'`,
+  )
+  toast.add(loadingOptions)
   try {
-    store.update(id, transactionType, concept, date, price)
+    await store.update(id, transactionType, concept, date, price)
+    isDialogVisible.value = false
+    toast.remove(loadingOptions)
     toast.add({
       severity: 'success',
       summary: 'Transaction updated successfully',
       detail: `Transaction '${concept}' updated.`,
       life: toastDuration,
     })
-  } catch {
-    toast.add({
-      severity: 'error',
-      summary: 'Transaction could not be updated',
-      detail: `Transaction '${concept}' could not be updated due to an unexpected error, try again later.`,
-      life: toastDuration,
-    })
+  } catch (error: unknown) {
+    toast.remove(loadingOptions)
+    showErrorToast(
+      error,
+      'Transaction could not be updated',
+      `Transaction '${concept}' could not be updated due to an unexpected error, try again later.`,
+    )
+  } finally {
+    isSubmitting.value = false
   }
 }
 
-function confirmDeleteTransaction(transaction: Transaction) {
+async function deleteTransaction(transaction: Transaction) {
+  const loadingOptions = buildLoadingToastOptions(
+    'Deleting transaction',
+    `Deleting transaction '${transaction.concept}'`,
+  )
+  toast.add(loadingOptions)
+  try {
+    await store.remove(transaction.id)
+    toast.remove(loadingOptions)
+    toast.add({
+      severity: 'success',
+      summary: 'Transaction deleted successfully',
+      detail: `Transaction '${transaction.concept}' deleted.`,
+      life: toastDuration,
+    })
+  } catch (error: unknown) {
+    toast.remove(loadingOptions)
+    showErrorToast(
+      error,
+      'Transaction could not be deleted',
+      `Transaction '${transaction.concept}' could not be deleted due to an unexpected error, try again later.`,
+    )
+  }
+}
+
+async function confirmDeleteTransaction(transaction: Transaction) {
   confirm.require({
     header: 'Delete Transaction',
     message: 'Are you sure you want to delete this transaction?',
@@ -89,26 +162,13 @@ function confirmDeleteTransaction(transaction: Transaction) {
       severity: 'secondary',
       variant: 'outlined',
     },
-    accept: () => {
-      try {
-        store.remove(transaction.id)
-        toast.add({
-          severity: 'success',
-          summary: 'Transaction deleted successfully',
-          detail: `Transaction '${transaction.concept}' deleted.`,
-          life: toastDuration,
-        })
-      } catch {
-        toast.add({
-          severity: 'error',
-          summary: 'Transaction could not be deleted',
-          detail: `Transaction '${transaction.concept}' could not be deleted due to an unexpected error, try again later.`,
-          life: toastDuration,
-        })
-      }
-    },
+    accept: async () => deleteTransaction(transaction),
   })
 }
+
+onMounted(() => {
+  store.loadAll()
+})
 </script>
 
 <template>
@@ -120,6 +180,13 @@ function confirmDeleteTransaction(transaction: Transaction) {
         :allTransactions="store.transactions"
         :expenses="store.expenses"
         :incomes="store.incomes"
+        :loadingAll="store.loading"
+        :loadingExpenses="store.loading"
+        :loadingIncomes="store.loading"
+        :errorLoadingAll="store.error"
+        :errorLoadingExpenses="store.error"
+        :errorLoadingIncomes="store.error"
+        :deletingTransactionIds="store.deletingTransactionIds"
         class="flex-1"
         @edit="openEditDialog"
         @delete="confirmDeleteTransaction"
@@ -132,10 +199,20 @@ function confirmDeleteTransaction(transaction: Transaction) {
     v-model:visible="isDialogVisible"
     v-model:editingTransaction="editingTransaction"
     :currencies="CURRENCIES"
+    :isSubmitting="isSubmitting"
     @add="addTransaction"
     @update="updateTransaction"
   />
 
   <ConfirmDialog class="max-w-[90dvw]" />
   <Toast position="bottom-left" />
+  <Toast position="bottom-left" group="loading">
+    <template #messageicon>
+      <ProgressSpinner
+        style="width: 1.5rem; height: 1.5rem"
+        strokeWidth="8"
+        animationDuration="2s"
+      />
+    </template>
+  </Toast>
 </template>
