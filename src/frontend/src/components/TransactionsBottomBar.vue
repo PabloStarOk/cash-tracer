@@ -22,7 +22,7 @@ function updateDate(input: unknown) {
 <template>
   <Card>
     <template #content>
-      <div class="flex gap-4 justify-between">
+      <div class="flex gap-4 items-center justify-between">
         <FloatLabel variant="in" class="max-[375px]:max-w-40">
           <DatePicker
             :model-value="legacyDate"
@@ -43,7 +43,7 @@ function updateDate(input: unknown) {
           </DatePicker>
           <label for="transactionsDate">Date</label>
         </FloatLabel>
-        <Button icon="pi pi-plus" label="Add" @click="$emit('add')" />
+        <Button icon="pi pi-plus" label="Add" @click="$emit('add')" class="h-fit" />
       </div>
     </template>
   </Card>
